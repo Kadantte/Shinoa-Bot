@@ -17,7 +17,7 @@ namespace NadekoBot.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "①.④①";
+        public const string BotVersion = "①.④②";
 
         public string Author => "<@199153694464278529>";
         public string Library => "Discord.Net";
