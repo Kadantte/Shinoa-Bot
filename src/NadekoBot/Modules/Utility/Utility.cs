@@ -420,8 +420,8 @@ namespace NadekoBot.Modules.Utility
                             _client.Guilds.Count, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
 #if !GLOBAL_NADEKO
                     //.WithFooter(efb => efb.WithText(GetText("stats_songs",
-                    //    _music.MusicPlayers.Count(mp => mp.Value.CurrentSong != null),
-                    //    _music.MusicPlayers.Sum(mp => mp.Value.Playlist.Count))))
+                        //_music.MusicPlayers.Count(mp => mp.Value.CurrentSong != null),
+                        //_music.MusicPlayers.Sum(mp => mp.Value.Playlist.Count))))
 #endif
                     );
         }
@@ -448,7 +448,7 @@ namespace NadekoBot.Modules.Utility
             if (page < 0)
                 return;
 
-            var guilds = await Task.Run(() => _client.Guilds.OrderBy(g => g.Name).Skip((page - 1) * 15).Take(15)).ConfigureAwait(false);
+            var guilds = await Task.Run(() => _client.Guilds.OrderBy(g => g.Name).Skip((page) * 15).Take(15)).ConfigureAwait(false);
 
             if (!guilds.Any())
             {

@@ -132,7 +132,7 @@ namespace NadekoBot.Modules.Gambling
 
                 var title = GetText("flowerreaction_title");
                 var desc = GetText("flowerreaction_desc", "💰", Format.Bold(amount.ToString()) + _bc.CurrencySign);
-                var footer = GetText("flowerreaction_footer", 24);
+                var footer = GetText("flowerreaction_footer", 72);
                 var msg = await context.Channel.SendConfirmAsync(title,
                         desc, footer: footer)
                     .ConfigureAwait(false);
@@ -222,7 +222,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 try
                 {
-                    await Task.Delay(TimeSpan.FromHours(24), CancelToken).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromHours(72), CancelToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
