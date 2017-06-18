@@ -83,7 +83,7 @@ namespace NadekoBot.Modules.Gambling
                 try
                 {
                     var title = GetText("sneakygamestatus_title");
-                    var desc = GetText("sneakygamestatus_desc", Format.Bold(100.ToString()) + _bc.CurrencySign, Format.Bold(num.ToString()));
+                    var desc = GetText("sneakygamestatus_desc", Format.Bold(5000.ToString()) + _bc.CurrencySign, Format.Bold(num.ToString()));
                     await context.Channel.SendConfirmAsync(title, desc).ConfigureAwait(false);
                 }
                 catch
@@ -111,7 +111,7 @@ namespace NadekoBot.Modules.Gambling
                 {
                     var _ = Task.Run(async () =>
                     {
-                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 100, false)
+                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 5000, false)
                             .ConfigureAwait(false);
 
                         try { await arg.DeleteAsync(new RequestOptions() { RetryMode = RetryMode.AlwaysFail }).ConfigureAwait(false); }
