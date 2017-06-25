@@ -101,6 +101,11 @@ namespace NadekoBot.Services.Music
                                     relatedVideos[new NadekoRandom().Next(0, relatedVideos.Count)],
                                     true).ConfigureAwait(false);
                         }
+                        else if (mp.Playlist.Count == 0)
+                        {
+                            if (MusicPlayers.TryRemove(textCh.Guild.Id, out mp))
+                                mp.Destroy(); ///need to destroy like stop and next.
+                        }
                     }
                     catch
                     {
