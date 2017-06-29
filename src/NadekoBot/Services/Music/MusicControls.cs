@@ -131,9 +131,15 @@ namespace NadekoBot.Services.Music
                         if (CurrentSong == null)
                             continue;
 
-                        if (AudioClient != null)
-                            try { await AudioClient.StopAsync().ConfigureAwait(false); } catch { }
-                        AudioClient = await PlaybackVoiceChannel.ConnectAsync().ConfigureAwait(false);
+                        while (AudioClient?.ConnectionState == ConnectionState.Disconnecting || 
+                            AudioClient?.ConnectionState == ConnectionState.Connecting)
+                        {
+                            _log.Info("Waiting for Audio client");
+                            await Task.Delay(200).ConfigureAwait(false);
+                        }
+
+                        if (AudioClient == null || AudioClient.ConnectionState == ConnectionState.Disconnected)
+                            AudioClient = await PlaybackVoiceChannel.ConnectAsync().ConfigureAwait(false);
 
                         var index = _playlist.IndexOf(CurrentSong);
                         if (index != -1)
@@ -165,8 +171,6 @@ namespace NadekoBot.Services.Music
                         _log.Warn("Music thread almost crashed.");
                         _log.Warn(ex);
                         await Task.Delay(3000).ConfigureAwait(false);
-                        _log.Warn("Shutting down, hope you are running the bot with auto restart.");
-                        Environment.Exit(0);
                     }
                     finally
                     {
