@@ -187,9 +187,9 @@ namespace NadekoBot.Services.Music
                              int bytesRead = 0;
 
                              while ((bytesRead = b.Read(buffer, 0, buffer.Length)) > 0
-                                && (MaxPlaytimeSeconds <= 0 || MaxPlaytimeSeconds >= CurrentTime.TotalSeconds))
+                             && (MaxPlaytimeSeconds <= 0 || MaxPlaytimeSeconds >= CurrentTime.TotalSeconds))
                              {
-                                 //AdjustVolume(buffer, Volume);
+                                 AdjustVolume(buffer, Volume);
                                  await pcm.WriteAsync(buffer, 0, bytesRead, cancelToken).ConfigureAwait(false);
                                  unchecked { _bytesSent += bytesRead; }
 
@@ -215,6 +215,7 @@ namespace NadekoBot.Services.Music
                                  var flushDelay = Task.Delay(1000, flushToken);
                                  await Task.WhenAny(flushDelay, pcm.FlushAsync(flushToken));
                                  flushCancel.Cancel();
+                                 pcm.Dispose();
                              }
 
                              OnCompleted?.Invoke(this, data.Song);
