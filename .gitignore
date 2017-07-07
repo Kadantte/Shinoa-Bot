@@ -355,3 +355,6 @@ __pycache__/
 
 ### VisualStudio Patch ###
 build/
+src/NadekoBot/data/images/currency/img3.jpg
+src/NadekoBot/data/images/currency/img1.jpg
+src/NadekoBot/data/images/currency/img2.jpg

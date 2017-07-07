@@ -22,7 +22,8 @@ namespace NadekoBot
         private readonly Logger _log;
         private readonly ShardComServer _comServer;
         private readonly int _port;
-        
+        private readonly int _curProcessId;
+
         public ShardsCoordinator(int port)
         {
             LogSetup.SetupLogger();
@@ -36,6 +37,8 @@ namespace NadekoBot
             _comServer.Start();
 
             _comServer.OnDataReceived += _comServer_OnDataReceived;
+
+            _curProcessId = Process.GetCurrentProcess().Id;
         }
 
         private Task _comServer_OnDataReceived(ShardComMessage msg)
@@ -49,13 +52,12 @@ namespace NadekoBot
 
         public async Task RunAsync()
         {
-            var curProcessId = Process.GetCurrentProcess().Id;
             for (int i = 1; i < Credentials.TotalShards; i++)
             {
                 var p = Process.Start(new ProcessStartInfo()
                 {
                     FileName = Credentials.ShardRunCommand,
-                    Arguments = string.Format(Credentials.ShardRunArguments, i, curProcessId, _port)
+                    Arguments = string.Format(Credentials.ShardRunArguments, i, _curProcessId, _port)
                 });
                 await Task.Delay(5000);
             }
@@ -71,36 +73,38 @@ namespace NadekoBot
             {
                 _log.Error(ex);
             }
-            await Task.Run(() =>
-            {
-                string input;
-                while ((input = Console.ReadLine()?.ToLowerInvariant()) != "quit")
-                {
-                    try
-                    {
-                        switch (input)
-                        {
-                            case "ls":
-                                var groupStr = string.Join(",", Statuses
-                                    .ToArray()
-                                    .Where(x => x != null)
-                                    .GroupBy(x => x.ConnectionState)
-                                    .Select(x => x.Count() + " " + x.Key));
-                                _log.Info(string.Join("\n", Statuses
-                                    .ToArray()
-                                    .Where(x => x != null)
-                                    .Select(x => $"Shard {x.ShardId} is in {x.ConnectionState.ToString()} state with {x.Guilds} servers. {(DateTime.UtcNow - x.Time).ToString(@"hh\:mm\:ss")} ago")) + "\n" + groupStr);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _log.Warn(ex);
-                    }
-                }
-            });
+            //await Task.Run(() =>
+            //{
+            //    string input;
+            //    while ((input = Console.ReadLine()?.ToLowerInvariant()) != "quit")
+            //    {
+            //        try
+            //        {
+            //            switch (input)
+            //            {
+            //                case "ls":
+            //                    var groupStr = string.Join(",", Statuses
+            //                        .ToArray()
+            //                        .Where(x => x != null)
+            //                        .GroupBy(x => x.ConnectionState)
+            //                        .Select(x => x.Count() + " " + x.Key));
+            //                    _log.Info(string.Join("\n", Statuses
+            //                        .ToArray()
+            //                        .Where(x => x != null)
+            //                        .Select(x => $"Shard {x.ShardId} is in {x.ConnectionState.ToString()} state with {x.Guilds} servers. {(DateTime.UtcNow - x.Time).ToString(@"hh\:mm\:ss")} ago")) + "\n" + groupStr);
+            //                    break;
+            //                default:
+            //                    break;
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            _log.Warn(ex);
+            //        }
+            //    }
+            //});
+
+            await Task.Delay(-1);
             foreach (var p in ShardProcesses)
             {
                 try { p.Kill(); } catch { }

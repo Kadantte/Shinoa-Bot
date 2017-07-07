@@ -13,6 +13,8 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
 using System.Net.Http;
+using NadekoBot.Services.Impl;
+using System.Globalization;
 
 namespace NadekoBot.Services.Music
 {
@@ -44,6 +46,7 @@ namespace NadekoBot.Services.Music
             _sc = sc;
             _creds = creds;
             _log = LogManager.GetCurrentClassLogger();
+            _yt = YouTube.Default;
 
             try { Directory.Delete(MusicDataPath, true); } catch { }
 
@@ -76,6 +79,7 @@ namespace NadekoBot.Services.Music
             string GetText(string text, params object[] replacements) =>
                 _strings.GetText(text, _localization.GetCultureInfo(textCh.Guild), "Music".ToLowerInvariant(), replacements);
 
+            _log.Info("Checks");
             if (voiceCh == null || voiceCh.Guild != textCh.Guild)
             {
                 if (textCh != null)
@@ -84,14 +88,18 @@ namespace NadekoBot.Services.Music
                 }
                 throw new ArgumentException(nameof(voiceCh));
             }
-
+            _log.Info("Get or add");
             return MusicPlayers.GetOrAdd(guildId, _ =>
             {
+                _log.Info("Getting default volume");
                 var vol = GetDefaultVolume(guildId);
+                _log.Info("Creating musicplayer instance");
                 var mp = new MusicPlayer(this, _google, voiceCh, textCh, vol);
 
                 IUserMessage playingMessage = null;
                 IUserMessage lastFinishedMessage = null;
+
+                _log.Info("Subscribing");
                 mp.OnCompleted += async (s, song) =>
                 {
                     try
@@ -158,7 +166,7 @@ namespace NadekoBot.Services.Music
                         // ignored
                     }
                 };
-                
+                _log.Info("Done creating");
                 return mp;
             });
         }
@@ -225,8 +233,8 @@ namespace NadekoBot.Services.Music
 
         public async Task<SongInfo> ResolveSoundCloudSong(string query, string queuerName)
         {
-            var svideo = !_sc.IsSoundCloudLink(query) ? 
-                await _sc.GetVideoByQueryAsync(query).ConfigureAwait(false):
+            var svideo = !_sc.IsSoundCloudLink(query) ?
+                await _sc.GetVideoByQueryAsync(query).ConfigureAwait(false) :
                 await _sc.ResolveVideoAsync(query).ConfigureAwait(false);
 
             if (svideo == null)
@@ -234,23 +242,23 @@ namespace NadekoBot.Services.Music
             return await SongInfoFromSVideo(svideo, queuerName);
         }
 
-        public async Task<SongInfo> SongInfoFromSVideo(SoundCloudVideo svideo, string queuerName) =>
-            new SongInfo
+        public Task<SongInfo> SongInfoFromSVideo(SoundCloudVideo svideo, string queuerName) =>
+            Task.FromResult(new SongInfo
             {
                 Title = svideo.FullName,
                 Provider = "SoundCloud",
-                Uri = await svideo.StreamLink().ConfigureAwait(false),
+                Uri = () => svideo.StreamLink(),
                 ProviderType = MusicType.Soundcloud,
                 Query = svideo.TrackLink,
                 AlbumArt = svideo.artwork_url,
                 QueuerName = queuerName
-            };
+            });
 
-    public SongInfo ResolveLocalSong(string query, string queuerName)
+        public SongInfo ResolveLocalSong(string query, string queuerName)
         {
             return new SongInfo
             {
-                Uri = "\"" + Path.GetFullPath(query) + "\"",
+                Uri = () => Task.FromResult("\"" + Path.GetFullPath(query) + "\""),
                 Title = Path.GetFileNameWithoutExtension(query),
                 Provider = "Local File",
                 ProviderType = MusicType.Local,
@@ -263,7 +271,7 @@ namespace NadekoBot.Services.Music
         {
             return new SongInfo
             {
-                Uri = query,
+                Uri = () => Task.FromResult(query),
                 Title = query,
                 Provider = "Radio Stream",
                 ProviderType = MusicType.Radio,
@@ -280,41 +288,103 @@ namespace NadekoBot.Services.Music
             }
         }
 
-        public async Task<SongInfo> ResolveYoutubeSong(string query, string queuerName)
+        public Task<SongInfo> ResolveYoutubeSong(string query, string queuerName)
         {
-            var link = (await _google.GetVideoLinksByKeywordAsync(query).ConfigureAwait(false)).FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(link))
-            {
-                _log.Info("No song found.");
-                return null;
-            }
-            var allVideos = await Task.Run(async () => { try { return await YouTube.Default.GetAllVideosAsync(link).ConfigureAwait(false); } catch { return Enumerable.Empty<YouTubeVideo>(); } }).ConfigureAwait(false);
-            var videos = allVideos.Where(v => v.AdaptiveKind == AdaptiveKind.Audio);
-            var video = videos
-                .Where(v => v.AudioBitrate < 256)
-                .OrderByDescending(v => v.AudioBitrate)
-                .FirstOrDefault();
+            _log.Info("Getting video");
+            //var (link, video) = await GetYoutubeVideo(query);
 
-            if (video == null) // do something with this error
+            //if (video == null) // do something with this error
+            //{
+            //    _log.Info("Could not load any video elements based on the query.");
+            //    return null;
+            //}
+            ////var m = Regex.Match(query, @"\?t=(?<t>\d*)");
+            ////int gotoTime = 0;
+            ////if (m.Captures.Count > 0)
+            ////    int.TryParse(m.Groups["t"].ToString(), out gotoTime);
+
+            //_log.Info("Creating song info");
+            //var song = new SongInfo
+            //{
+            //    Title = video.Title.Substring(0, video.Title.Length - 10), // removing trailing "- You Tube"
+            //    Provider = "YouTube",
+            //    Uri = async () => {
+            //        var vid = await GetYoutubeVideo(query);
+            //        if (vid.Item2 == null)
+            //            throw new HttpRequestException();
+
+            //        return await vid.Item2.GetUriAsync();
+            //    },
+            //    Query = link,
+            //    ProviderType = MusicType.YouTube,
+            //    QueuerName = queuerName
+            //};
+            return GetYoutubeVideo(query, queuerName);
+        }
+
+        private async Task<SongInfo> GetYoutubeVideo(string query, string queuerName)
+        {
+            _log.Info("Getting link");
+            string[] data;
+            try
             {
-                _log.Info("Could not load any video elements based on the query.");
+                using (var ytdl = new YtdlOperation())
+                {
+                    data = (await ytdl.GetDataAsync(query)).Split('\n');
+                }
+                if (data.Length < 6)
+                {
+                    _log.Info("No song found. Data less than 6");
+                    return null;
+                }
+                TimeSpan time;
+                if (!TimeSpan.TryParseExact(data[4], new[] { "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out time))
+                    time = TimeSpan.FromHours(24);
+
+                return new SongInfo()
+                {
+                    Title = data[0],
+                    VideoId = data[1],
+                    Uri = async () => {
+                        using (var ytdl = new YtdlOperation())
+                        {
+                            data = (await ytdl.GetDataAsync(query)).Split('\n');
+                        }
+                        if (data.Length < 6)
+                        {
+                            _log.Info("No song found. Data less than 6");
+                            return null;
+                        }
+                        return data[2];
+                    },
+                    AlbumArt = data[3],
+                    TotalTime = time,
+                    QueuerName = queuerName,
+                    Provider = "YouTube",
+                    ProviderType = MusicType.YouTube,
+                    Query = "https://youtube.com/watch?v=" + data[1],
+                };
+            }
+            catch (Exception ex)
+            {
+                _log.Warn(ex);
                 return null;
             }
-            //var m = Regex.Match(query, @"\?t=(?<t>\d*)");
-            //int gotoTime = 0;
-            //if (m.Captures.Count > 0)
-            //    int.TryParse(m.Groups["t"].ToString(), out gotoTime);
-            
-            var song = new SongInfo
-            {
-                Title = video.Title.Substring(0, video.Title.Length - 10), // removing trailing "- You Tube"
-                Provider = "YouTube",
-                Uri = await video.GetUriAsync().ConfigureAwait(false),
-                Query = link,
-                ProviderType = MusicType.YouTube,
-                QueuerName = queuerName
-            };
-            return song;
+
+            //if (string.IsNullOrWhiteSpace(link))
+            //{
+            //    _log.Info("No song found.");
+            //    return (null, null);
+            //}
+            //_log.Info("Getting all videos");
+            //var allVideos = await Task.Run(async () => { try { return await _yt.GetAllVideosAsync(link).ConfigureAwait(false); } catch { return Enumerable.Empty<YouTubeVideo>(); } }).ConfigureAwait(false);
+            //var videos = allVideos.Where(v => v.AdaptiveKind == AdaptiveKind.Audio);
+            //var video = videos
+            //    .Where(v => v.AudioBitrate < 256)
+            //    .OrderByDescending(v => v.AudioBitrate)
+            //    .FirstOrDefault();
+
+            //return (link, video);
         }
 
         private bool IsRadioLink(string query) =>
@@ -336,6 +406,7 @@ namespace NadekoBot.Services.Music
         private readonly Regex m3uRegex = new Regex("(?<url>^[^#].*)", RegexOptions.Compiled | RegexOptions.Multiline);
         private readonly Regex asxRegex = new Regex("<ref href=\"(?<url>.*?)\"", RegexOptions.Compiled);
         private readonly Regex xspfRegex = new Regex("<location>(?<url>.*?)</location>", RegexOptions.Compiled);
+        private readonly YouTube _yt;
 
         private async Task<string> HandleStreamContainers(string query)
         {
