@@ -149,7 +149,7 @@ namespace NadekoBot.Modules.Gambling
                         await ReplyErrorLocalized("min_bet_limit", 1 + _bc.CurrencySign).ConfigureAwait(false);
                         return;
                     }
-                    const int maxAmount = 10000000;
+                    const int maxAmount = 9999;
                     if (amount > maxAmount)
                     {
                         GetText("slot_maxbet", maxAmount + _bc.CurrencySign);
