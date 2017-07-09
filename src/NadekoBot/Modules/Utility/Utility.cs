@@ -325,9 +325,9 @@ namespace NadekoBot.Modules.Utility
         {            
             await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
-                    .WithAuthor(eab => eab.WithName($"Click >>Here<< to invite me! | ❋Sнιησα❋ v{StatsService.BotVersion}")
-                                          .WithUrl("http://bit.ly/InvShinoa")
-                                          .WithIconUrl("http://i.imgur.com/ejLDGwO.png"))
+                    .WithAuthor(eab => eab.WithName($"Click >>Here<< to invite me! | ❋Σπε❋ v{StatsService.BotVersion}")
+                                          .WithUrl("http://bit.ly/InvEne")
+                                          .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
                     .AddField(efb => efb.WithName(GetText("author")).WithValue(_stats.Author).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("botid")).WithValue(_client.CurrentUser.Id.ToString()).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("shard")).WithValue($"#{_bot.ShardId} / {_creds.TotalShards}").WithIsInline(true))
