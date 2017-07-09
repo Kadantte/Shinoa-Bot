@@ -1,11 +1,10 @@
-Hello there!
-This is the ShinoaBot. She's basically a clone of the NadekoBot. 
-But Shinoa has everything enabled. Even music! :o
+Hello there!  
+This is the Ene-Bot. She's basically a clone of the NadekoBot.   
+But Ene has everything enabled. Even music! :o  
 
-You can take a look at the docs, if you want.
+You can take a look at the docs, if you want.  
+http://enecmdlist.readthedocs.io/en/latest/  
 
-http://shinoacmdlist.readthedocs.io/en/latest/
+Invite Ene: http://bit.ly/InvEne  
 
-Invite Shinoa: http://bit.ly/InvShinoa
-
-Join my Cave: http://bit.ly/ShinoaDiscordCave
+Join my Cave: http://bit.ly/EnesDiscordCave  
