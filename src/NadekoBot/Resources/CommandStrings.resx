@@ -685,13 +685,13 @@
     <value>`{0}prune` or `{0}prune 5` or `{0}prune @Someone` or `{0}prune @Someone X`</value>
   </data>
   <data name="die_cmd" xml:space="preserve">
-    <value>die</value>
+    <value>sleep</value>
   </data>
   <data name="die_desc" xml:space="preserve">
     <value>Shuts the bot down.</value>
   </data>
   <data name="die_usage" xml:space="preserve">
-    <value>`{0}die`</value>
+    <value>`{0}sleep`</value>
   </data>
   <data name="setname_cmd" xml:space="preserve">
     <value>setname newnm</value>
@@ -2989,13 +2989,13 @@
     <value>`{0}cmdcost 0 !!q` or `{0}cmdcost 1 &gt;8ball`</value>
   </data>
   <data name="startevent_cmd" xml:space="preserve">
-    <value>startevent</value>
+    <value>se</value>
   </data>
   <data name="startevent_desc" xml:space="preserve">
     <value>Starts one of the events seen on public nadeko.</value>
   </data>
   <data name="startevent_usage" xml:space="preserve">
-    <value>`{0}startevent flowerreaction`</value>
+    <value>`{0}se Coins`</value>
   </data>
   <data name="slotstats_cmd" xml:space="preserve">
     <value>slotstats</value>

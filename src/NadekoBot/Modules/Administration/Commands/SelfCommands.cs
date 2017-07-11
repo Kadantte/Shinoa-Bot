@@ -265,7 +265,7 @@ namespace NadekoBot.Modules.Administration
                 try
                 {
                     var embed = new EmbedBuilder().WithTitle("I will sleep now.")
-												  .WithDescription("<@199153694464278529> I will be back soon. 💙")
+												  .WithDescription("I will be back soon. 💙")
 												  .WithImageUrl("http://i.imgur.com/PTRo8Qp.gif");
                 await Context.Channel.EmbedAsync(embed.WithOkColor()).ConfigureAwait(false);
                 }

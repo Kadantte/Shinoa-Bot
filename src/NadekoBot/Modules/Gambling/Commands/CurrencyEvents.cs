@@ -21,8 +21,8 @@ namespace NadekoBot.Modules.Gambling
         {
             public enum CurrencyEvent
             {
-                FlowerReaction,
-                SneakyGameStatus
+                Coins,
+                Game
             }
             //flower reaction event
             private static readonly ConcurrentHashSet<ulong> _sneakyGameAwardedUsers = new ConcurrentHashSet<ulong>();
@@ -52,10 +52,10 @@ namespace NadekoBot.Modules.Gambling
             {
                 switch (e)
                 {
-                    case CurrencyEvent.FlowerReaction:
+                    case CurrencyEvent.Coins:
                         await FlowerReactionEvent(Context, arg).ConfigureAwait(false);
                         break;
-                    case CurrencyEvent.SneakyGameStatus:
+                    case CurrencyEvent.Game:
                         await SneakyGameStatusEvent(Context, arg).ConfigureAwait(false);
                         break;
                 }
@@ -65,7 +65,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 int num;
                 if (arg == null || arg < 5)
-                    num = 60;
+                    num = 86400;
                 else
                     num = arg.Value;
 
