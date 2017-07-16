@@ -814,7 +814,7 @@
     <value>serverinfo sinfo</value>
   </data>
   <data name="serverinfo_desc" xml:space="preserve">
-    <value>Shows info about the server the bot is on. If no channel is supplied, it defaults to current one.</value>
+    <value>Shows info about the server the bot is on. If no server is supplied, it defaults to current one.</value>
   </data>
   <data name="serverinfo_usage" xml:space="preserve">
     <value>`{0}sinfo Some Server`</value>
@@ -1534,7 +1534,7 @@
     <value>listqueue lq</value>
   </data>
   <data name="listqueue_desc" xml:space="preserve">
-    <value>Lists 15 currently queued songs per page. Default page is 1.</value>
+    <value>Lists 10 currently queued songs per page. Default page is 1.</value>
   </data>
   <data name="listqueue_usage" xml:space="preserve">
     <value>`{0}lq` or `{0}lq 2`</value>
@@ -1700,6 +1700,15 @@
   </data>
   <data name="save_usage" xml:space="preserve">
     <value>`{0}save classical1`</value>
+  </data>
+    <data name="streamrole_cmd" xml:space="preserve">
+    <value>streamrole</value>
+  </data>
+  <data name="streamrole_desc" xml:space="preserve">
+    <value>Sets a role which is monitored for streamers (FromRole), and a role to add if a user from 'FromRole' is streaming (AddRole). When a user from 'FromRole' starts streaming, they will receive an 'AddRole'. Provide no arguments to disable</value>
+  </data>
+  <data name="streamrole_usage" xml:space="preserve">
+    <value>`{0}streamrole "Eligible Streamers" "Featured Streams"`</value>
   </data>
   <data name="load_cmd" xml:space="preserve">
     <value>load</value>

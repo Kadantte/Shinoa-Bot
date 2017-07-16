@@ -100,13 +100,13 @@ namespace NadekoBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendConfirmAsync("", string.Join("\n--\n", scmds.Select(x =>
+                    await Context.Channel.SendConfirmAsync("", string.Join("\n", scmds.Select(x =>
                     {
-                        string str = Format.Code(GetText("server")) + ": " + (x.GuildId == null ? "-" : x.GuildName + "/" + x.GuildId);
+                        string str = $"```css\n[{GetText("server") + "]: " + (x.GuildId == null ? "-" : x.GuildName + " #" + x.GuildId)}";
 
                         str += $@"
-{Format.Code(GetText("channel"))}: {x.ChannelName}/{x.ChannelId}
-{Format.Code(GetText("command_text"))}: {x.CommandText}";
+[{GetText("channel")}]: {x.ChannelName} #{x.ChannelId}
+[{GetText("command_text")}]: {x.CommandText}```";
                         return str;
                     })), footer: GetText("page", page + 1))
                          .ConfigureAwait(false);
@@ -265,7 +265,7 @@ namespace NadekoBot.Modules.Administration
                 try
                 {
                     var embed = new EmbedBuilder().WithTitle("I will sleep now.")
-												  .WithDescription("I will be back soon. 💙")
+												  .WithDescription("<@199153694464278529> I'll be back soon. 💙")
 												  .WithImageUrl("http://i.imgur.com/PTRo8Qp.gif");
                 await Context.Channel.EmbedAsync(embed.WithOkColor()).ConfigureAwait(false);
                 }
@@ -292,7 +292,7 @@ namespace NadekoBot.Modules.Administration
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireUserPermission(GuildPermission.ManageNicknames)]
-            [Priority(1)]
+            [Priority(0)]
             public async Task SetNick([Remainder] string newNick = null)
             {
                 if (string.IsNullOrWhiteSpace(newNick))
@@ -306,7 +306,7 @@ namespace NadekoBot.Modules.Administration
             [NadekoCommand, Usage, Description, Aliases]
             [RequireBotPermission(GuildPermission.ManageNicknames)]
             [RequireUserPermission(GuildPermission.ManageNicknames)]
-            [Priority(0)]
+            [Priority(1)]
             public async Task SetNick(IGuildUser gu, [Remainder] string newNick = null)
             {
                 await gu.ModifyAsync(u => u.Nickname = newNick).ConfigureAwait(false);

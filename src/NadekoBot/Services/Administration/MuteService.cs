@@ -20,7 +20,7 @@ namespace NadekoBot.Services.Administration
         All
     }
 
-    public class MuteService
+    public class MuteService : INService
     {
         public ConcurrentDictionary<ulong, string> GuildMuteRoles { get; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> MutedUsers { get; }
@@ -30,7 +30,7 @@ namespace NadekoBot.Services.Administration
         public event Action<IGuildUser, MuteType> UserMuted = delegate { };
         public event Action<IGuildUser, MuteType> UserUnmuted = delegate { };
 
-        private static readonly OverwritePermissions denyOverwrite = new OverwritePermissions(sendMessages: PermValue.Deny, attachFiles: PermValue.Deny);
+        private static readonly OverwritePermissions denyOverwrite = new OverwritePermissions(addReactions: PermValue.Deny, sendMessages: PermValue.Deny, attachFiles: PermValue.Deny);
 
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly DiscordSocketClient _client;

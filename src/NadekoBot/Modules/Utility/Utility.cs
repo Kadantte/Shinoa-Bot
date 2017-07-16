@@ -28,14 +28,14 @@ namespace NadekoBot.Modules.Utility
         private readonly DiscordSocketClient _client;
         private readonly IStatsService _stats;
         private readonly IBotCredentials _creds;
-        private readonly NadekoBot _bot;
+        private readonly ShardsCoordinator _shardCoord;
 
-        public Utility(NadekoBot bot, DiscordSocketClient client, IStatsService stats, IBotCredentials creds)
+        public Utility(ShardsCoordinator shardCoord, DiscordSocketClient client, IStatsService stats, IBotCredentials creds)
         {
             _client = client;
             _stats = stats;
             _creds = creds;
-            _bot = bot;
+            _shardCoord = shardCoord;
         }        
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -161,11 +161,12 @@ namespace NadekoBot.Modules.Utility
             var usrs = (await Context.Guild.GetUsersAsync()).ToArray();
             var roleUsers = usrs.Where(u => u.RoleIds.Contains(role.Id)).Select(u => u.ToString())
                 .ToArray();
+            var inroleusers = string.Join(", ", roleUsers
+                    .OrderBy(x => rng.Next())
+                    .Take(50));
             var embed = new EmbedBuilder().WithOkColor()
                 .WithTitle("ℹ️ " + Format.Bold(GetText("inrole_list", Format.Bold(role.Name))) + $" - {roleUsers.Length}")
-                .WithDescription(string.Join(", ", roleUsers
-                    .OrderBy(x => rng.Next())
-                    .Take(50)));
+                .WithDescription($"```css\n[{role.Name}]\n{inroleusers}```");
             await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
 
@@ -285,7 +286,7 @@ namespace NadekoBot.Modules.Utility
         {
             if (--page < 0)
                 return;
-            var statuses = _bot.ShardCoord.Statuses.ToArray()
+            var statuses = _shardCoord.Statuses.ToArray()
                 .Where(x => x != null);
 
             var status = string.Join(", ", statuses
@@ -330,7 +331,7 @@ namespace NadekoBot.Modules.Utility
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
                     .AddField(efb => efb.WithName(GetText("author")).WithValue(_stats.Author).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("botid")).WithValue(_client.CurrentUser.Id.ToString()).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("shard")).WithValue($"#{_bot.ShardId} / {_creds.TotalShards}").WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("shard")).WithValue($"#{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("commands_ran")).WithValue(_stats.CommandsRan.ToString()).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("messages")).WithValue($"{_stats.MessageCounter} ({_stats.MessagesPerSecond:F2}/sec)").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("memory")).WithValue($"{_stats.Heap} MB").WithIsInline(true))
