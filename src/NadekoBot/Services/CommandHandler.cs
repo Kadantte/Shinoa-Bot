@@ -9,12 +9,13 @@ using Discord.Commands;
 using NadekoBot.Extensions;
 using System.Collections.Concurrent;
 using System.Threading;
-using NadekoBot.DataStructures;
 using System.Collections.Immutable;
-using NadekoBot.DataStructures.ModuleBehaviors;
 using NadekoBot.Services.Database.Models;
 using System.IO;
 using Discord.Net;
+using NadekoBot.Common;
+using NadekoBot.Common.Collections;
+using NadekoBot.Common.ModuleBehaviors;
 
 namespace NadekoBot.Services
 {
@@ -274,8 +275,6 @@ namespace NadekoBot.Services
                 }
                 else if (result.Error != null)
                 {
-                    //todo 80 should have log levels and it should return some kind of result, 
-                    // instead of tuple with the type of thing that went wrong, like before
                     LogErroredExecution(result.Error, usrMsg,  channel as ITextChannel, exec2, exec3, execTime);
                     if (guild != null)
                         await CommandErrored(result.Info, channel as ITextChannel, result.Error);
