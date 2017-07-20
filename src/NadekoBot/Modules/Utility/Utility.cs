@@ -30,12 +30,12 @@ namespace NadekoBot.Modules.Utility
         private readonly IBotCredentials _creds;
         private readonly ShardsCoordinator _shardCoord;
 
-        public Utility(ShardsCoordinator shardCoord, DiscordSocketClient client, IStatsService stats, IBotCredentials creds)
+        public Utility(NadekoBot nadeko, DiscordSocketClient client, IStatsService stats, IBotCredentials creds)
         {
             _client = client;
             _stats = stats;
             _creds = creds;
-            _shardCoord = shardCoord;
+            _shardCoord = nadeko.ShardCoord;
         }        
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -59,10 +59,10 @@ namespace NadekoBot.Modules.Utility
                 }
                 return;
             }
-            
+
             var hexColors = hexes.Select(hex =>
             {
-                try { return (ImageSharp.Color?)ImageSharp.Color.FromHex(hex.Replace("#", "")); } catch { return null; }
+                try { return (Rgba32?)Rgba32.FromHex(hex.Replace("#", "")); } catch { return null; }
             })
             .Where(c => c != null)
             .Select(c => c.Value)
@@ -76,7 +76,7 @@ namespace NadekoBot.Modules.Utility
 
             var images = hexColors.Select(color =>
             {
-                var img = new ImageSharp.Image(50, 50);
+                var img = new ImageSharp.Image<Rgba32>(50, 50);
                 img.BackgroundColor(color);
                 return img;
             }).Merge().ToStream();
@@ -326,7 +326,7 @@ namespace NadekoBot.Modules.Utility
         {            
             await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
-                    .WithAuthor(eab => eab.WithName($"Click >>Here<< to invite me! | ❋Σπε❋ v{StatsService.BotVersion}")
+                    .WithAuthor(eab => eab.WithName($"Invite me >>Here!<< | Ene v{StatsService.BotVersion}")
                                           .WithUrl("http://bit.ly/InvEne")
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
                     .AddField(efb => efb.WithName(GetText("author")).WithValue(_stats.Author).WithIsInline(true))

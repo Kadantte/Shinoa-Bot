@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using NadekoBot.Services.Database;
-using NadekoBot.Services.Database.Models;
 
 namespace NadekoBot.Migrations
 {
@@ -1126,6 +1124,26 @@ namespace NadekoBot.Migrations
                     b.ToTable("StartupCommand");
                 });
 
+            modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleBlacklistedUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<int?>("StreamRoleSettingsId");
+
+                    b.Property<ulong>("UserId");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamRoleSettingsId");
+
+                    b.ToTable("StreamRoleBlacklistedUser");
+                });
+
             modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -1135,9 +1153,13 @@ namespace NadekoBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
+                    b.Property<bool>("Enabled");
+
                     b.Property<ulong>("FromRoleId");
 
                     b.Property<int>("GuildConfigId");
+
+                    b.Property<string>("Keyword");
 
                     b.HasKey("Id");
 
@@ -1145,6 +1167,26 @@ namespace NadekoBot.Migrations
                         .IsUnique();
 
                     b.ToTable("StreamRoleSettings");
+                });
+
+            modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleWhitelistedUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<int?>("StreamRoleSettingsId");
+
+                    b.Property<ulong>("UserId");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamRoleSettingsId");
+
+                    b.ToTable("StreamRoleWhitelistedUser");
                 });
 
             modelBuilder.Entity("NadekoBot.Services.Database.Models.UnmuteTimer", b =>
@@ -1531,12 +1573,26 @@ namespace NadekoBot.Migrations
                         .HasForeignKey("BotConfigId");
                 });
 
+            modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleBlacklistedUser", b =>
+                {
+                    b.HasOne("NadekoBot.Services.Database.Models.StreamRoleSettings")
+                        .WithMany("Blacklist")
+                        .HasForeignKey("StreamRoleSettingsId");
+                });
+
             modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleSettings", b =>
                 {
                     b.HasOne("NadekoBot.Services.Database.Models.GuildConfig", "GuildConfig")
                         .WithOne("StreamRole")
                         .HasForeignKey("NadekoBot.Services.Database.Models.StreamRoleSettings", "GuildConfigId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("NadekoBot.Services.Database.Models.StreamRoleWhitelistedUser", b =>
+                {
+                    b.HasOne("NadekoBot.Services.Database.Models.StreamRoleSettings")
+                        .WithMany("Whitelist")
+                        .HasForeignKey("StreamRoleSettingsId");
                 });
 
             modelBuilder.Entity("NadekoBot.Services.Database.Models.UnmuteTimer", b =>

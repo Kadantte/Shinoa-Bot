@@ -3,7 +3,6 @@ using Discord.Commands;
 using ImageSharp;
 using NadekoBot.Extensions;
 using NadekoBot.Services;
-using NadekoBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NadekoBot.Common;
 using NadekoBot.Common.Attributes;
+using SixLabors.Primitives;
 
 namespace NadekoBot.Modules.Gambling
 {
@@ -24,7 +24,7 @@ namespace NadekoBot.Modules.Gambling
             private static int _totalPaidOut;
 
             private static readonly HashSet<ulong> _runningUsers = new HashSet<ulong>();
-            private readonly BotConfig _bc;
+            private readonly IBotConfigProvider _bc;
 
             private const int _alphaCutOut = byte.MaxValue / 3;
 
@@ -35,7 +35,7 @@ namespace NadekoBot.Modules.Gambling
             private readonly IImagesService _images;
             private readonly CurrencyService _cs;
 
-            public SlotCommands(IImagesService images, BotConfig bc, CurrencyService cs)
+            public SlotCommands(IImagesService images, IBotConfigProvider bc, CurrencyService cs)
             {
                 _images = images;
                 _bc = bc;
@@ -147,26 +147,26 @@ namespace NadekoBot.Modules.Gambling
                 {
                     if (amount < 1)
                     {
-                        await ReplyErrorLocalized("min_bet_limit", 1 + _bc.CurrencySign).ConfigureAwait(false);
+                        await ReplyErrorLocalized("min_bet_limit", 1 + _bc.BotConfig.CurrencySign).ConfigureAwait(false);
                         return;
                     }
-                    const int maxAmount = 1000000;
+                    const int maxAmount = 10000000;
                     if (amount > maxAmount)
                     {
-                        GetText("slot_maxbet", maxAmount + _bc.CurrencySign);
-                        await ReplyErrorLocalized("max_bet_limit", maxAmount + _bc.CurrencySign).ConfigureAwait(false);
+                        GetText("slot_maxbet", maxAmount + _bc.BotConfig.CurrencySign);
+                        await ReplyErrorLocalized("max_bet_limit", maxAmount + _bc.BotConfig.CurrencySign).ConfigureAwait(false);
                         return;
                     }
 
                     if (!await _cs.RemoveAsync(Context.User, "Slot Machine", amount, false))
                     {
-                        await ReplyErrorLocalized("not_enough", _bc.CurrencySign).ConfigureAwait(false);
+                        await ReplyErrorLocalized("not_enough", _bc.BotConfig.CurrencySign).ConfigureAwait(false);
                         return;
                     }
                     Interlocked.Add(ref _totalBet, amount);
                     using (var bgFileStream = _images.SlotBackground.ToStream())
                     {
-                        var bgImage = new ImageSharp.Image(bgFileStream);
+                        var bgImage = ImageSharp.Image.Load(bgFileStream);
 
                         var result = SlotMachine.Pull();
                         int[] numbers = result.Numbers;
@@ -174,7 +174,7 @@ namespace NadekoBot.Modules.Gambling
                         for (int i = 0; i < 3; i++)
                         {
                             using (var file = _images.SlotEmojis[numbers[i]].ToStream())
-                            using (var randomImage = new ImageSharp.Image(file))
+                            using (var randomImage = ImageSharp.Image.Load(file))
                             {
                                 bgImage.DrawImage(randomImage, 100, default(Size), new Point(95 + 142 * i, 330));
                             }
@@ -187,7 +187,7 @@ namespace NadekoBot.Modules.Gambling
                         {
                             var digit = printWon % 10;
                             using (var fs = _images.SlotNumbers[digit].ToStream())
-                            using (var img = new ImageSharp.Image(fs))
+                            using (var img = ImageSharp.Image.Load(fs))
                             {
                                 bgImage.DrawImage(img, 100, default(Size), new Point(230 - n * 16, 462));
                             }
@@ -200,8 +200,8 @@ namespace NadekoBot.Modules.Gambling
                         {
                             var digit = printAmount % 10;
                             using (var fs = _images.SlotNumbers[digit].ToStream())
-                            using (var img = new ImageSharp.Image(fs))
-                            { 
+                            using (var img = ImageSharp.Image.Load(fs))
+                            {
                                 bgImage.DrawImage(img, 100, default(Size), new Point(395 - n * 16, 462));
                             }
                             n++;
@@ -213,16 +213,16 @@ namespace NadekoBot.Modules.Gambling
                             await _cs.AddAsync(Context.User, $"Slot Machine x{result.Multiplier}", amount * result.Multiplier, false);
                             Interlocked.Add(ref _totalPaidOut, amount * result.Multiplier);
                             if (result.Multiplier == 1)
-                                msg = GetText("slot_single", _bc.CurrencySign, 1);
+                                msg = GetText("slot_single", _bc.BotConfig.CurrencySign, 1);
                             else if (result.Multiplier == 4)
-                                msg = GetText("slot_two", _bc.CurrencySign, 4);
+                                msg = GetText("slot_two", _bc.BotConfig.CurrencySign, 4);
                             else if (result.Multiplier == 10)
                                 msg = GetText("slot_three", 10);
                             else if (result.Multiplier == 30)
                                 msg = GetText("slot_jackpot", 30);
                         }
 
-                        await Context.Channel.SendFileAsync(bgImage.ToStream(), "result.png", Context.User.Mention + " " + msg + $"\n`{GetText("slot_bet")}:`{amount} `{GetText("slot_won")}:` {amount * result.Multiplier}{_bc.CurrencySign}").ConfigureAwait(false);
+                        await Context.Channel.SendFileAsync(bgImage.ToStream(), "result.png", Context.User.Mention + " " + msg + $"\n`{GetText("slot_bet")}:`{amount} `{GetText("slot_won")}:` {amount * result.Multiplier}{_bc.BotConfig.CurrencySign}").ConfigureAwait(false);
                     }
                 }
                 finally

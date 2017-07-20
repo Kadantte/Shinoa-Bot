@@ -1480,7 +1480,7 @@
     <value>stop s</value>
   </data>
   <data name="stop_desc" xml:space="preserve">
-    <value>Stops the music and clears the playlist. Stays in the channel.</value>
+    <value>Stops the music and preserves the current song index. Stays in the channel.</value>
   </data>
   <data name="stop_usage" xml:space="preserve">
     <value>`{0}s`</value>
@@ -1642,7 +1642,7 @@
     <value>songremove srm</value>
   </data>
   <data name="songremove_desc" xml:space="preserve">
-    <value>Remove a song by its # in the queue, or 'all' to remove all songs from the queue.</value>
+    <value>Remove a song by its # in the queue, or 'all' to remove all songs from the queue and reset the song index.</value>
   </data>
   <data name="songremove_usage" xml:space="preserve">
     <value>`{0}srm 5`</value>
@@ -2998,13 +2998,13 @@
     <value>`{0}cmdcost 0 !!q` or `{0}cmdcost 1 &gt;8ball`</value>
   </data>
   <data name="startevent_cmd" xml:space="preserve">
-    <value>se</value>
+    <value>event</value>
   </data>
   <data name="startevent_desc" xml:space="preserve">
     <value>Starts one of the events seen on public nadeko.</value>
   </data>
   <data name="startevent_usage" xml:space="preserve">
-    <value>`{0}se Coins`</value>
+    <value>`{0}event Coins`</value>
   </data>
   <data name="slotstats_cmd" xml:space="preserve">
     <value>slotstats</value>
@@ -3545,5 +3545,41 @@
   </data>
   <data name="verboseerror_desc" xml:space="preserve">
     <value>Toggles whether the bot should print command errors when a command is incorrectly used.</value>
+  </data>
+  <data name="streamrolekeyword_cmd" xml:space="preserve">
+    <value>streamrolekw srkw</value>
+  </data>
+  <data name="streamrolekeyword_usage" xml:space="preserve">
+    <value>`{0}srkw` or `{0}srkw PUBG`</value>
+  </data>
+  <data name="streamrolekeyword_desc" xml:space="preserve">
+    <value>Sets keyword which is required in the stream's title in order for the streamrole to apply. Provide no keyword in order to reset.</value>
+  </data>
+  <data name="streamroleblacklist_cmd" xml:space="preserve">
+    <value>streamrolebl srbl</value>
+  </data>
+  <data name="streamroleblacklist_usage" xml:space="preserve">
+    <value>`{0}srbl add @b1nzy#1234` or `{0}srbl rem @b1nzy#1234`</value>
+  </data>
+  <data name="streamroleblacklist_desc" xml:space="preserve">
+    <value>Adds or removes a blacklisted user. Blacklisted users will never receive the stream role.</value>
+  </data>
+  <data name="streamrolewhitelist_cmd" xml:space="preserve">
+    <value>streamrolewl srwl</value>
+  </data>
+  <data name="streamrolewhitelist_usage" xml:space="preserve">
+    <value>`{0}srwl add @b1nzy#1234` or `{0}srwl rem @b1nzy#1234`</value>
+  </data>
+  <data name="streamrolewhitelist_desc" xml:space="preserve">
+    <value>Adds or removes a whitelisted user. Whitelisted users will receive the stream role even if they don't have the specified keyword in their stream title.</value>
+  </data>
+  <data name="botconfigedit_cmd" xml:space="preserve">
+    <value>botconfigedit bce</value>
+  </data>
+  <data name="botconfigedit_usage" xml:space="preserve">
+    <value>`{0}bce CurrencyName b1nzy` or `{0}bce`</value>
+  </data>
+  <data name="botconfigedit_desc" xml:space="preserve">
+    <value>Sets one of available bot config settings to a specified value. Use the command without any parameters to get a list of available settings.</value>
   </data>
 </root>
