@@ -265,6 +265,7 @@ namespace NadekoBot.Modules.Administration
             [OwnerOnly]
             public async Task Die()
             {
+				await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
                 try
                 {
                     var embed = new EmbedBuilder().WithTitle("I will sleep now.")
