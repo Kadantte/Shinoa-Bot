@@ -270,6 +270,57 @@ namespace NadekoBot.Modules.CustomReactions
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        public async Task CrCa(int id)
+        {
+            if ((Context.Guild == null && !_creds.IsOwner(Context.User)) ||
+                (Context.Guild != null && !((IGuildUser)Context.User).GuildPermissions.Administrator))
+            {
+                await ReplyErrorLocalized("insuff_perms").ConfigureAwait(false);
+                return;
+            }
+
+            CustomReaction[] reactions = new CustomReaction[0];
+
+            if (Context.Guild == null)
+                reactions = _service.GlobalReactions;
+            else
+            {
+                _service.GuildReactions.TryGetValue(Context.Guild.Id, out reactions);
+            }
+            if (reactions.Any())
+            {
+                var reaction = reactions.FirstOrDefault(x => x.Id == id);
+
+                if (reaction == null)
+                {
+                    await ReplyErrorLocalized("no_found_id").ConfigureAwait(false);
+                    return;
+                }
+
+                var setValue = reaction.ContainsAnywhere = !reaction.ContainsAnywhere;
+
+                using (var uow = _db.UnitOfWork)
+                {
+                    uow.CustomReactions.Get(id).ContainsAnywhere = setValue;
+                    uow.Complete();
+                }
+
+                if (setValue)
+                {
+                    await ReplyConfirmLocalized("crca_enabled", Format.Code(reaction.Id.ToString())).ConfigureAwait(false);
+                }
+                else
+                {
+                    await ReplyConfirmLocalized("crca_disabled", Format.Code(reaction.Id.ToString())).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await ReplyErrorLocalized("no_found").ConfigureAwait(false);
+            }
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task CrDm(int id)
         {
             if ((Context.Guild == null && !_creds.IsOwner(Context.User)) || 
@@ -382,8 +433,7 @@ namespace NadekoBot.Modules.CustomReactions
             }
             else
             {
-                uint throwaway;
-                if (_service.ReactionStats.TryRemove(trigger, out throwaway))
+                if (_service.ReactionStats.TryRemove(trigger, out _))
                 {
                     await ReplyErrorLocalized("stats_cleared", Format.Bold(trigger)).ConfigureAwait(false);
                 }

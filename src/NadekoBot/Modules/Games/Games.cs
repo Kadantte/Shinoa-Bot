@@ -11,6 +11,13 @@ using NadekoBot.Modules.Games.Services;
 
 namespace NadekoBot.Modules.Games
 {
+    /*todo more games
+    - Blackjack
+    - Shiritori
+    - Simple RPG adventure
+    - The nunchi game
+    - Connect 4
+    */
     public partial class Games : NadekoTopLevelModule<GamesService>
     {
         private readonly IImagesService _images;
