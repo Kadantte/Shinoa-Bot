@@ -270,7 +270,7 @@ namespace NadekoBot.Modules.Administration
                 {
                     var embed = new EmbedBuilder().WithTitle("I will sleep now.")
 												  .WithDescription("<@199153694464278529> I'll be back soon. 💙")
-												  .WithImageUrl("http://i.imgur.com/PTRo8Qp.gif");
+												  .WithImageUrl("http://i.imgur.com/nTxa4ba.gif");
                 await Context.Channel.EmbedAsync(embed.WithOkColor()).ConfigureAwait(false);
                 }
                 catch

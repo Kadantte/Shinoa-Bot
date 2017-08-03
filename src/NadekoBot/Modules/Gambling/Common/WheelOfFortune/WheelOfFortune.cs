@@ -23,14 +23,14 @@ namespace NadekoBot.Modules.Gambling.Common.WheelOfFortune
             "↗" }.ToImmutableArray();
 
         public static readonly ImmutableArray<float> Multipliers = new float[] {
-            1.7f,
-            1.5f,
+            2.5f,
+            2f,
             0.2f,
             0.1f,
             0.3f,
             0.5f,
-            1.2f,
-            2.4f,
+            1f,
+            3f,
         }.ToImmutableArray();
 
         public int Result { get; }
