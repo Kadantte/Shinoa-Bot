@@ -14,6 +14,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
         {
             Joining,
             Playing,
+            WaitingForNextRound,
             Ended,
         }
 
@@ -21,7 +22,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
         public Phase CurrentPhase { get; private set; } = Phase.Joining;
 
         public event Func<Nunchi, Task> OnGameStarted;
-        public event Func<Nunchi, Task> OnRoundStarted;
+        public event Func<Nunchi, int, Task> OnRoundStarted;
         public event Func<Nunchi, Task> OnUserGuessed;
         public event Func<Nunchi, (ulong Id, string Name)?, Task> OnRoundEnded; // tuple of the user who failed
         public event Func<Nunchi, string, Task> OnGameEnded; // name of the user who won
@@ -35,6 +36,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
         public int ParticipantCount => _participants.Count;
 
         private const int _killTimeout = 20 * 1000;
+        private const int _nextRoundTimeout = 5 * 1000;
         private Timer _killTimer;
 
         public Nunchi(ulong creatorId, string creatorName)
@@ -62,7 +64,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
             await _locker.WaitAsync().ConfigureAwait(false);
             try
             {
-                if (_participants.Count < 2)
+                if (_participants.Count < 3)
                 {
                     CurrentPhase = Phase.Ended;
                     return false;
@@ -85,7 +87,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
 
                 CurrentPhase = Phase.Playing;
                 var _ = OnGameStarted?.Invoke(this);
-                var __ = OnRoundStarted?.Invoke(this);
+                var __ = OnRoundStarted?.Invoke(this, CurrentNumber);
                 return true;
             }
             finally { _locker.Release(); }
@@ -119,6 +121,7 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
                         // if only 2 players are left, game is over
                         if (_participants.Count == 2)
                         {
+                            _killTimer.Change(Timeout.Infinite, Timeout.Infinite);
                             CurrentPhase = Phase.Ended;
                             var _ = OnGameEnded?.Invoke(this, userTuple.Name);
                         }
@@ -151,11 +154,19 @@ namespace NadekoBot.Modules.Games.Common.Nunchi
             var __ = OnRoundEnded?.Invoke(this, failure);
             if (_participants.Count <= 1) // means we have a winner or everyone was booted out
             {
+                _killTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 CurrentPhase = Phase.Ended;
                 var _ = OnGameEnded?.Invoke(this, _participants.Count > 0 ? _participants.First().Name : null);
                 return;
             }
-            var ___ = OnRoundStarted?.Invoke(this);
+            CurrentPhase = Phase.WaitingForNextRound;
+            var throwawayDelay = Task.Run(async () =>
+            {
+                await Task.Delay(_nextRoundTimeout).ConfigureAwait(false);
+                CurrentPhase = Phase.Playing;
+                var ___ = OnRoundStarted?.Invoke(this, CurrentNumber);
+            });
+            
         }
 
         public void Dispose()

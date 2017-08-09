@@ -1273,10 +1273,19 @@
     <value>nunchi</value>
   </data>
   <data name="nunchi_desc" xml:space="preserve">
-    <value>Creates or joins a nunchi game. Minimum 3 users required.</value>
+    <value>Creates or joins an existing nunchi game. Users have to count up by 1 from the starting number shown by the bot. If someone makes a mistake (types an incorrent number, or repeats the same number) they are out of the game and a new round starts without them.  Minimum 3 users required.</value>
   </data>
   <data name="nunchi_usage" xml:space="preserve">
     <value>`{0}nunchi`</value>
+  </data>
+  <data name="connect4_cmd" xml:space="preserve">
+    <value>connect4 con4</value>
+  </data>
+  <data name="connect4_desc" xml:space="preserve">
+    <value>Creates or joins an existing connect4 game. 2 players are required for the game. Objective of the game is to get 4 of your pieces next to each other in a vertical, horizontal or diagonal line.</value>
+  </data>
+  <data name="connect4_usage" xml:space="preserve">
+    <value>`{0}connect4`</value>
   </data>
   <data name="raffle_cmd" xml:space="preserve">
     <value>raffle</value>
@@ -1529,6 +1538,15 @@
   </data>
   <data name="queue_usage" xml:space="preserve">
     <value>`{0}q Dream Of Venice`</value>
+  </data>
+  <data name="queuenext_cmd" xml:space="preserve">
+    <value>queuenext qn</value>
+  </data>
+  <data name="queuenext_desc" xml:space="preserve">
+    <value>Works the same as `{0}queue` command, except it enqueues the new song after the current one. **You must be in a voice channel**.</value>
+  </data>
+  <data name="queuenext_usage" xml:space="preserve">
+    <value>`{0}qn Dream Of Venice`</value>
   </data>
   <data name="queuesearch_cmd" xml:space="preserve">
     <value>queuesearch qs yqs</value>
@@ -1791,14 +1809,14 @@
   <data name="lolban_usage" xml:space="preserve">
     <value>`{0}lolban`</value>
   </data>
-  <data name="hitbox_cmd" xml:space="preserve">
-    <value>hitbox hb</value>
+  <data name="smashcast_cmd" xml:space="preserve">
+    <value>smashcast hb</value>
   </data>
-  <data name="hitbox_desc" xml:space="preserve">
+  <data name="smashcast_desc" xml:space="preserve">
     <value>Notifies this channel when a certain user starts streaming.</value>
   </data>
-  <data name="hitbox_usage" xml:space="preserve">
-    <value>`{0}hitbox SomeStreamer`</value>
+  <data name="smashcast_usage" xml:space="preserve">
+    <value>`{0}smashcast SomeStreamer`</value>
   </data>
   <data name="twitch_cmd" xml:space="preserve">
     <value>twitch tw</value>
@@ -1809,14 +1827,14 @@
   <data name="twitch_usage" xml:space="preserve">
     <value>`{0}twitch SomeStreamer`</value>
   </data>
-  <data name="beam_cmd" xml:space="preserve">
-    <value>beam bm</value>
+  <data name="mixer_cmd" xml:space="preserve">
+    <value>mixer bm</value>
   </data>
-  <data name="beam_desc" xml:space="preserve">
+  <data name="mixer_desc" xml:space="preserve">
     <value>Notifies this channel when a certain user starts streaming.</value>
   </data>
-  <data name="beam_usage" xml:space="preserve">
-    <value>`{0}beam SomeStreamer`</value>
+  <data name="mixer_usage" xml:space="preserve">
+    <value>`{0}mixer SomeStreamer`</value>
   </data>
   <data name="removestream_cmd" xml:space="preserve">
     <value>removestream rms</value>
@@ -1825,7 +1843,7 @@
     <value>Removes notifications of a certain streamer from a certain platform on this channel.</value>
   </data>
   <data name="removestream_usage" xml:space="preserve">
-    <value>`{0}rms Twitch SomeGuy` or `{0}rms Beam SomeOtherGuy`</value>
+    <value>`{0}rms Twitch SomeGuy` or `{0}rms mixer SomeOtherGuy`</value>
   </data>
   <data name="liststreams_cmd" xml:space="preserve">
     <value>liststreams ls</value>
@@ -3013,7 +3031,7 @@
     <value>Sets a price for a command. Running that command will take currency from users. Set 0 to remove the price.</value>
   </data>
   <data name="commandcost_usage" xml:space="preserve">
-    <value>`{0}cmdcost 0 !!q` or `{0}cmdcost 1 &gt;8ball`</value>
+    <value>`{0}cmdcost 0 !!q` or `{0}cmdcost 1 {0}8ball`</value>
   </data>
   <data name="startevent_cmd" xml:space="preserve">
     <value>event</value>
@@ -3022,7 +3040,7 @@
     <value>Starts one of the events seen on public nadeko.</value>
   </data>
   <data name="startevent_usage" xml:space="preserve">
-    <value>`{0}event Coins`</value>
+    <value>`event Coins`</value>
   </data>
   <data name="slotstats_cmd" xml:space="preserve">
     <value>slotstats</value>
@@ -3157,7 +3175,7 @@
     <value>Starts a game of tic tac toe. Another user must run the command in the same channel in order to accept the challenge. Use numbers 1-9 to play. 15 seconds per move.</value>
   </data>
   <data name="tictactoe_usage" xml:space="preserve">
-    <value>&gt;ttt</value>
+    <value>{0}ttt</value>
   </data>
   <data name="timezones_cmd" xml:space="preserve">
     <value>timezones</value>

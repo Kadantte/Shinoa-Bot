@@ -336,10 +336,13 @@ namespace NadekoBot.Modules.Utility
                     .AddField(efb => efb.WithName(GetText("messages")).WithValue($"{_stats.MessageCounter} ({_stats.MessagesPerSecond:F2}/sec)").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("memory")).WithValue($"{_stats.Heap} MB").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("owner_ids")).WithValue(string.Join("\n", _creds.OwnerIds)).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("uptime")).WithValue(_stats.GetUptimeString("\n")).WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("uptime")).WithValue(_stats.GetUptimeString("\n")).WithIsInline(true))				
                     .AddField(efb => efb.WithName(GetText("presence")).WithValue(
                         GetText("presence_txt",
-                            _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true)));
+                            _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
+					.AddField(efb => efb.WithName($"My Cave").WithValue($"http://bit.ly/EnesDiscordCave").WithIsInline(true))								
+					.AddField(efb => efb.WithName($"Steam").WithValue($"http://bit.ly/GremSteam").WithIsInline(true))
+					.WithFooter(efb => efb.WithText($"💙 Type .music for new music commands! 💙")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]

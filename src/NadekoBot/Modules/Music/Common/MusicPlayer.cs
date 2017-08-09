@@ -401,7 +401,17 @@ namespace NadekoBot.Modules.Music.Common
                 if (Exited)
                     return -1;
                 Queue.Add(song);
-                return Queue.Count;
+                return Queue.Count - 1;
+            }
+        }
+
+        public int EnqueueNext(SongInfo song)
+        {
+            lock (locker)
+            {
+                if (Exited)
+                    return -1;
+                return Queue.AddNext(song);
             }
         }
 
