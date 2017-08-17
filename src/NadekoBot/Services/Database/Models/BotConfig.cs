@@ -20,9 +20,9 @@ namespace NadekoBot.Services.Database.Models
         public string RemindMessageFormat { get; set; } = "❗⏰**I've been told to remind you to '%message%' now by %user%.**⏰❗";
         
         //currency
-        public string CurrencySign { get; set; } = "🌸";
-        public string CurrencyName { get; set; } = "Nadeko Flower";
-        public string CurrencyPluralName { get; set; } = "Nadeko Flowers";
+        public string CurrencySign { get; set; } = "💰";
+        public string CurrencyName { get; set; } = "Coin";
+        public string CurrencyPluralName { get; set; } = "Coins";
 
         public int TriviaCurrencyReward { get; set; } = 0;
         public int MinimumBetAmount { get; set; } = 2;
@@ -59,7 +59,7 @@ Nadeko Support Server: https://discord.gg/nadekobot";
 
         public int MigrationVersion { get; set; }
 
-        public string OkColor { get; set; } = "71cd40";
+        public string OkColor { get; set; } = "008fff";
         public string ErrorColor { get; set; } = "ee281f";
         public string Locale { get; set; } = null;
         public List<StartupCommand> StartupCommands { get; set; }

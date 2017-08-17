@@ -265,13 +265,9 @@ namespace NadekoBot.Modules.Administration
             [OwnerOnly]
             public async Task Die()
             {
-				await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
                 try
                 {
-                    var embed = new EmbedBuilder().WithTitle("I will sleep now.")
-												  .WithDescription("<@199153694464278529> I'll be back soon. 💙")
-												  .WithImageUrl("http://i.imgur.com/nTxa4ba.gif");
-                await Context.Channel.EmbedAsync(embed.WithOkColor()).ConfigureAwait(false);
+                    await ReplyConfirmLocalized("shutting_down").ConfigureAwait(false);
                 }
                 catch
                 {

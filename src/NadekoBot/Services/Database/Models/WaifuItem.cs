@@ -21,7 +21,7 @@ namespace NadekoBot.Services.Database.Models
             Laptop,
             Violin,
             Ring,
-            Diamond,
+            Helicopter,
         }
 
         public WaifuItem()
@@ -62,8 +62,8 @@ namespace NadekoBot.Services.Database.Models
                     return new WaifuItem("🎻", 7500, itemName);
                 case ItemName.Ring:
                     return new WaifuItem("💍", 10000, itemName);
-                case ItemName.Diamond:
-                    return new WaifuItem("💎", 20000, itemName);
+                case ItemName.Helicopter:
+                    return new WaifuItem("🚁", 20000, itemName);
                 default:
                     throw new ArgumentException(nameof(itemName));
             }

@@ -591,7 +591,7 @@
     "utility_activity_line": "`{0}.` {1} [{2:F2}/s] - {3} total",
     "utility_activity_page": "Aktivitäten Liste #{0}",
     "utility_activity_users_total": "{0} totale Benutzer.",
-    "utility_author": "Mein Meister",
+    "utility_author": "Autor",
     "utility_botid": "ID des Bots",
     "utility_calcops": "Liste der Funktionen im {0}calc Befehl",
     "utility_channelid": "{0} dieses Kanals ist {1}",
