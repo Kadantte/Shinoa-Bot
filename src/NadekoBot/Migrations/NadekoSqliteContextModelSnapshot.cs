@@ -70,8 +70,6 @@ namespace NadekoBot.Migrations
 
                     b.Property<int>("MessageThreshold");
 
-                    b.Property<int>("MuteTime");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GuildConfigId")

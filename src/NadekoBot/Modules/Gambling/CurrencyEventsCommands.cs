@@ -133,7 +133,7 @@ namespace NadekoBot.Modules.Gambling
                     amount = 2500;
 
                 var title = GetText("flowerreaction_title");
-                var desc = GetText("flowerreaction_desc", "🌸", Format.Bold(amount.ToString()) + _bc.BotConfig.CurrencySign);
+                var desc = GetText("flowerreaction_desc", "💰", Format.Bold(amount.ToString()) + _bc.BotConfig.CurrencySign);
                 var footer = GetText("flowerreaction_footer", 48);
                 var msg = await context.Channel.SendConfirmAsync(title,
                         desc, footer: footer)
@@ -223,10 +223,10 @@ namespace NadekoBot.Modules.Gambling
             StartingMessage = umsg;
             _client.MessageDeleted += MessageDeletedEventHandler;
 
-            try { await StartingMessage.AddReactionAsync(new Emoji("🌸")).ConfigureAwait(false); }
+            try { await StartingMessage.AddReactionAsync(new Emoji("💰")).ConfigureAwait(false); }
             catch
             {
-                try { await StartingMessage.AddReactionAsync(new Emoji("🌸")).ConfigureAwait(false); }
+                try { await StartingMessage.AddReactionAsync(new Emoji("💰")).ConfigureAwait(false); }
                 catch
                 {
                     try { await StartingMessage.DeleteAsync().ConfigureAwait(false); }
@@ -240,7 +240,7 @@ namespace NadekoBot.Modules.Gambling
                     if (r.UserId == _botUser.Id)
                         return;
 
-                    if (r.Emote.Name == "🌸" && r.User.IsSpecified && ((DateTime.UtcNow - r.User.Value.CreatedAt).TotalDays > 5) && _flowerReactionAwardedUsers.Add(r.User.Value.Id))
+                    if (r.Emote.Name == "💰" && r.User.IsSpecified && ((DateTime.UtcNow - r.User.Value.CreatedAt).TotalDays > 5) && _flowerReactionAwardedUsers.Add(r.User.Value.Id))
                     {
                         _toGiveTo.Enqueue(r.UserId);
                     }

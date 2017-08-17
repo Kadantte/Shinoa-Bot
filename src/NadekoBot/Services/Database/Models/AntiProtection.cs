@@ -18,7 +18,6 @@ namespace NadekoBot.Services.Database.Models
 
         public PunishmentAction Action { get; set; }
         public int MessageThreshold { get; set; } = 3;
-        public int MuteTime { get; set; } = 0;
         public HashSet<AntiSpamIgnore> IgnoredChannels { get; set; } = new HashSet<AntiSpamIgnore>();
     }
 
