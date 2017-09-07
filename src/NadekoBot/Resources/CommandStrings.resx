@@ -721,7 +721,7 @@
     <value>`{0}setav http://i.imgur.com/xTG3a1I.jpg`</value>
   </data>
   <data name="setgame_cmd" xml:space="preserve">
-    <value>setgame</value>
+    <value>game</value>
   </data>
   <data name="setgame_desc" xml:space="preserve">
     <value>Sets the bots game.</value>
@@ -1339,7 +1339,7 @@
     <value>Bets a certain amount of currency on the wheel of fortune. Wheel can stop on one of many different multipliers. Won amount is rounded down to the nearest whole number.</value>
   </data>
   <data name="wheeloffortune_usage" xml:space="preserve">
-    <value>`{0}wheel 5`</value>
+    <value>`{0}wheel 10`</value>
   </data>
   <data name="leaderboard_cmd" xml:space="preserve">
     <value>leaderboard lb</value>
@@ -2825,6 +2825,15 @@
   </data>
   <data name="fairplay_usage" xml:space="preserve">
     <value>`{0}fp`</value>
+  </data>
+  <data name="songautodelete_cmd" xml:space="preserve">
+    <value>songautodelete sad</value>
+  </data>
+  <data name="songautodelete_desc" xml:space="preserve">
+    <value>Toggles whether the song should be automatically removed from the music queue when it finishes playing.</value>
+  </data>
+  <data name="songautodelete_usage" xml:space="preserve">
+    <value>`{0}sad`</value>
   </data>
   <data name="define_cmd" xml:space="preserve">
     <value>define def</value>

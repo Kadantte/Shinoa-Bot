@@ -67,7 +67,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 int num;
                 if (arg == null || arg < 5)
-                    num = 86400;
+                    num = 60;
                 else
                     num = arg.Value;
 
@@ -85,7 +85,7 @@ namespace NadekoBot.Modules.Gambling
                 try
                 {
                     var title = GetText("sneakygamestatus_title");
-                    var desc = GetText("sneakygamestatus_desc", Format.Bold(5000.ToString()) + _bc.BotConfig.CurrencySign, Format.Bold(num.ToString()));
+                    var desc = GetText("sneakygamestatus_desc", Format.Bold(250.ToString()) + _bc.BotConfig.CurrencySign, Format.Bold(num.ToString()));
                     await context.Channel.SendConfirmAsync(title, desc).ConfigureAwait(false);
                 }
                 catch
@@ -113,7 +113,7 @@ namespace NadekoBot.Modules.Gambling
                 {
                     var _ = Task.Run(async () =>
                     {
-                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 5000, false)
+                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 250, false)
                             .ConfigureAwait(false);
 
                         try { await arg.DeleteAsync(new RequestOptions() { RetryMode = RetryMode.AlwaysFail }).ConfigureAwait(false); }
@@ -130,11 +130,11 @@ namespace NadekoBot.Modules.Gambling
             public async Task FlowerReactionEvent(ICommandContext context, int amount)
             {
                 if (amount <= 0)
-                    amount = 2500;
+                    amount = 250;
 
                 var title = GetText("flowerreaction_title");
                 var desc = GetText("flowerreaction_desc", "💰", Format.Bold(amount.ToString()) + _bc.BotConfig.CurrencySign);
-                var footer = GetText("flowerreaction_footer", 48);
+                var footer = GetText("flowerreaction_footer", 24);
                 var msg = await context.Channel.SendConfirmAsync(title,
                         desc, footer: footer)
                     .ConfigureAwait(false);
@@ -253,7 +253,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 try
                 {
-                    await Task.Delay(TimeSpan.FromHours(48), CancelToken).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromHours(24), CancelToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
