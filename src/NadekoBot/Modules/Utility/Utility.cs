@@ -276,7 +276,7 @@ namespace NadekoBot.Modules.Utility
                             _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
 					.AddField(efb => efb.WithName($"My Cave").WithValue($"https://discord.gg/8kBW525").WithIsInline(true))								
 					.AddField(efb => efb.WithName($"Invite me").WithValue($"http://bit.ly/InvEne").WithIsInline(true))
-					.WithFooter(efb => efb.WithText($"💙 Type .music for new music commands! 💙")));
+					.WithFooter(efb => efb.WithText($"💙 Now with the brandnew XP Module! 💙")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -354,7 +354,7 @@ namespace NadekoBot.Modules.Utility
                     })
                 });
             await Context.User.SendFileAsync(
-                await JsonConvert.SerializeObject(grouping, Formatting.Indented).ToStream().ConfigureAwait(false), title, title).ConfigureAwait(false);
+                await JsonConvert.SerializeObject(grouping, Formatting.Indented).ToStream().ConfigureAwait(false), title, title, false).ConfigureAwait(false);
         }
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Ping()

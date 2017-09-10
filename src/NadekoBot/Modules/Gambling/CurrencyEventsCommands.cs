@@ -67,7 +67,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 int num;
                 if (arg == null || arg < 5)
-                    num = 60;
+                    num = 84600;
                 else
                     num = arg.Value;
 
@@ -85,7 +85,7 @@ namespace NadekoBot.Modules.Gambling
                 try
                 {
                     var title = GetText("sneakygamestatus_title");
-                    var desc = GetText("sneakygamestatus_desc", Format.Bold(250.ToString()) + _bc.BotConfig.CurrencySign, Format.Bold(num.ToString()));
+                    var desc = GetText("sneakygamestatus_desc", Format.Bold(2500.ToString()) + _bc.BotConfig.CurrencySign, Format.Bold(num.ToString()));
                     await context.Channel.SendConfirmAsync(title, desc).ConfigureAwait(false);
                 }
                 catch
@@ -113,7 +113,7 @@ namespace NadekoBot.Modules.Gambling
                 {
                     var _ = Task.Run(async () =>
                     {
-                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 250, false)
+                        await _cs.AddAsync(arg.Author, "Sneaky Game Event", 2500, false)
                             .ConfigureAwait(false);
 
                         try { await arg.DeleteAsync(new RequestOptions() { RetryMode = RetryMode.AlwaysFail }).ConfigureAwait(false); }
@@ -130,7 +130,7 @@ namespace NadekoBot.Modules.Gambling
             public async Task FlowerReactionEvent(ICommandContext context, int amount)
             {
                 if (amount <= 0)
-                    amount = 250;
+                    amount = 1500;
 
                 var title = GetText("flowerreaction_title");
                 var desc = GetText("flowerreaction_desc", "💰", Format.Bold(amount.ToString()) + _bc.BotConfig.CurrencySign);
