@@ -2959,7 +2959,7 @@
     <value>Starts one of the events seen on public nadeko.</value>
   </data>
   <data name="startevent_usage" xml:space="preserve">
-    <value>`{0}event Coins`</value>
+    <value>`{0}event coins`</value>
   </data>
   <data name="slotstats_cmd" xml:space="preserve">
     <value>slotstats</value>
@@ -3679,7 +3679,7 @@
     <value>`{0}clubaccept b1nzy#1337`</value>
   </data>
   <data name="clubaccept_desc" xml:space="preserve">
-    <value>Apply to join a club. You must meet that club's minimum level requirement, and not be on its ban list.</value>
+    <value>Accept a user who applied to your club.</value>
   </data>
   <data name="clubleave_cmd" xml:space="preserve">
     <value>clubleave</value>
@@ -3770,5 +3770,14 @@
   </data>
   <data name="clubleaderboard_desc" xml:space="preserve">
     <value>Shows club rankings on the specified page.</value>
+  </data>
+  <data name="nsfwclearcache_cmd" xml:space="preserve">
+    <value>nsfwcc</value>
+  </data>
+  <data name="nsfwclearcache_usage" xml:space="preserve">
+    <value>`{0}nsfwcc`</value>
+  </data>
+  <data name="nsfwclearcache_desc" xml:space="preserve">
+    <value>Clears nsfw cache.</value>
   </data>
 </root>
