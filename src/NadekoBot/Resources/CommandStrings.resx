@@ -685,13 +685,13 @@
     <value>`{0}prune` or `{0}prune 5` or `{0}prune @Someone` or `{0}prune @Someone X`</value>
   </data>
   <data name="die_cmd" xml:space="preserve">
-    <value>sleep</value>
+    <value>die</value>
   </data>
   <data name="die_desc" xml:space="preserve">
     <value>Shuts the bot down.</value>
   </data>
   <data name="die_usage" xml:space="preserve">
-    <value>`{0}sleep`</value>
+    <value>`{0}die`</value>
   </data>
   <data name="setname_cmd" xml:space="preserve">
     <value>setname newnm</value>
@@ -721,13 +721,13 @@
     <value>`{0}setav http://i.imgur.com/xTG3a1I.jpg`</value>
   </data>
   <data name="setgame_cmd" xml:space="preserve">
-    <value>game</value>
+    <value>setgame</value>
   </data>
   <data name="setgame_desc" xml:space="preserve">
     <value>Sets the bots game.</value>
   </data>
   <data name="setgame_usage" xml:space="preserve">
-    <value>`{0}game with snakes`</value>
+    <value>`{0}setgame with snakes`</value>
   </data>
   <data name="send_cmd" xml:space="preserve">
     <value>send</value>
@@ -2953,13 +2953,13 @@
     <value>`{0}cmdcost 0 !!q` or `{0}cmdcost 1 {0}8ball`</value>
   </data>
   <data name="startevent_cmd" xml:space="preserve">
-    <value>event</value>
+    <value>startevent</value>
   </data>
   <data name="startevent_desc" xml:space="preserve">
     <value>Starts one of the events seen on public nadeko.</value>
   </data>
   <data name="startevent_usage" xml:space="preserve">
-    <value>`{0}event coins`</value>
+    <value>`{0}startevent flowerreaction`</value>
   </data>
   <data name="slotstats_cmd" xml:space="preserve">
     <value>slotstats</value>
@@ -3589,7 +3589,7 @@
     <value>`{0}xpex Role Excluded-Role` `{0}xpex Server`</value>
   </data>
   <data name="xpexclude_desc" xml:space="preserve">
-    <value>Exclude a user or a role from the xp system, or whole current server.</value>
+    <value>Exclude a channel, role or current server from the xp system.</value>
   </data>
   <data name="xpnotify_cmd" xml:space="preserve">
     <value>xpnotify xpn</value>
@@ -3779,5 +3779,32 @@
   </data>
   <data name="nsfwclearcache_desc" xml:space="preserve">
     <value>Clears nsfw cache.</value>
+  </data>
+  <data name="clubadmin_cmd" xml:space="preserve">
+    <value>clubadmin</value>
+  </data>
+  <data name="clubadmin_usage" xml:space="preserve">
+    <value>`{0}clubadmin`</value>
+  </data>
+  <data name="clubadmin_desc" xml:space="preserve">
+    <value>Assigns (or unassigns) staff role to the member of the club. Admins can ban, kick and accept applications.</value>
+  </data>
+  <data name="autoboobs_cmd" xml:space="preserve">
+    <value>autoboobs</value>
+  </data>
+  <data name="autoboobs_desc" xml:space="preserve">
+    <value>Posts a boobs every X seconds. 20 seconds minimum. Provide no arguments to disable.</value>
+  </data>
+  <data name="autoboobs_usage" xml:space="preserve">
+    <value>`{0}autoboobs 30` or `{0}autoboobs`</value>
+  </data>
+  <data name="autobutts_cmd" xml:space="preserve">
+    <value>autobutts</value>
+  </data>
+  <data name="autobutts_desc" xml:space="preserve">
+    <value>Posts a butts every X seconds. 20 seconds minimum. Provide no arguments to disable.</value>
+  </data>
+  <data name="autobutts_usage" xml:space="preserve">
+    <value>`{0}autobutts 30` or `{0}autobutts`</value>
   </data>
 </root>

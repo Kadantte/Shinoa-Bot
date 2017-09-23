@@ -47,7 +47,7 @@ namespace NadekoBot.Services.Database.Models
         public Permission RootPermission { get; set; } = null;
         public List<Permissionv2> Permissions { get; set; }
         public bool VerbosePermissions { get; set; } = true;
-        public string PermissionRole { get; set; } = "Grembot";
+        public string PermissionRole { get; set; } = "Ene";
 
         public HashSet<CommandCooldown> CommandCooldowns { get; set; } = new HashSet<CommandCooldown>();
 
@@ -87,6 +87,7 @@ namespace NadekoBot.Services.Database.Models
         public StreamRoleSettings StreamRole { get; set; }
 
         public XpSettings XpSettings { get; set; }
+        public List<FeedSub> FeedSubs { get; set; } = new List<FeedSub>();
 
         //public List<ProtectionIgnoredChannel> ProtectionIgnoredChannels { get; set; } = new List<ProtectionIgnoredChannel>();
     }
