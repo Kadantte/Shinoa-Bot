@@ -94,7 +94,14 @@ namespace NadekoBot.Modules.Help
             if (com == null)
             {
                 IMessageChannel ch = channel is ITextChannel ? await ((IGuildUser)Context.User).GetOrCreateDMChannelAsync() : channel;
-                await ch.SendMessageAsync(HelpString).ConfigureAwait(false);
+                await ch.EmbedAsync(
+                    new EmbedBuilder().WithOkColor()
+                        .WithTitle($"What can I help you with? :)")
+                        .WithDescription($"Heeey. My name is Ene. I am Gremagol-sama's Bot. Also, a custom bot that offers a wide variety of features and high quality music. I'd be happy to help you improve your server!")
+                        .AddField(efb => efb.WithName($"💌Invite Links💌").WithValue($"🔗 [**CLICK HERE TO INVITE ME**](http://www.gremagol.com/inv-ene)\n🔗 [**JOIN MY SERVER IF YOU STILL NEED HELP**](https://discord.gg/8kBW525)").WithIsInline(false))
+                        .AddField(efb => efb.WithName($"⚙️Features🎶").WithValue($"✅ Moderation\n✅ Games and gambling\n✅ Xp and leveling\n✅ Multiple utility commands\n✅ And more!\n\n**Extra:**\n\n🎶 High quality music\n💰 Currency generation (`.gc`)\n⚙️ Logs\n🆒 Many funny custom reactions preloaded\n(type  `.cmds custom` in your server to see a list, type `.lcr` here for full list)").WithIsInline(false))
+                        .AddField(efb => efb.WithName($"Commands").WithValue($"▫️ [A list of all commands](http://www.gremagol.com/ene-commandlist)\n\n▶️ Type `.modules` to get the list of modules.\n▶️ Type `.cmds <module>` to get the list of a module's\n▶️commands.\n▶️ Type `.h <command>` to get help for a specific command.").WithIsInline(false))
+                        .WithImageUrl("https://i.imgur.com/UPAvj1i.png")).ConfigureAwait(false);
                 return;
             }
 
@@ -155,12 +162,23 @@ namespace NadekoBot.Modules.Help
                 "http://nadekobot.readthedocs.io/en/latest/Commands%20List/",
                 "http://nadekobot.readthedocs.io/en/latest/").ConfigureAwait(false);
         }
-
+        
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Donate()
         {
             await ReplyConfirmLocalized("donate", PatreonUrl, PaypalUrl).ConfigureAwait(false);
         }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        public async Task Invite()
+        {
+            await Context.Channel.EmbedAsync(
+                    new EmbedBuilder().WithOkColor()
+                        .WithDescription($"Here are some Invite Links! 💙")
+                        .AddField(efb => efb.WithName($"💌Invite me💌").WithValue($"⏩ [Click Here](http://www.gremagol.com/inv-ene) ⏪").WithIsInline(true))
+                        .AddField(efb => efb.WithName($"💟Join my Server💟").WithValue($"⏩ [Click Here](https://discord.gg/8kBW525) ⏪").WithIsInline(true))).ConfigureAwait(false);
+        }
+
     }
 
     public class CommandTextEqualityComparer : IEqualityComparer<CommandInfo>

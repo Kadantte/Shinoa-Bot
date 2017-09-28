@@ -40,7 +40,11 @@ namespace NadekoBot.Services.Database.Repositories.Impl
 
         public int GetUserGlobalRanking(ulong id)
         {
-            return _set.Count(x => x.TotalXp > 
+            if (!_set.Where(y => y.UserId == id).Any())
+            {
+                return _set.Count() + 1;
+            }
+            return _set.Count(x => x.TotalXp >= 
                 _set.Where(y => y.UserId == id)
                     .DefaultIfEmpty()
                     .Sum(y => y.TotalXp));

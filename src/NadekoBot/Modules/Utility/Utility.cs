@@ -263,7 +263,7 @@ namespace NadekoBot.Modules.Utility
                     .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
                                           .WithUrl("http://enecmdlist.readthedocs.io/en/latest/")
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
-                    .AddField(efb => efb.WithName(GetText("author")).WithValue(_stats.Author).WithIsInline(true))
+                    .AddField(efb => efb.WithName("My Master").WithValue(_stats.Author).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("botid")).WithValue(_client.CurrentUser.Id.ToString()).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("shard")).WithValue($"#{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("commands_ran")).WithValue(_stats.CommandsRan.ToString()).WithIsInline(true))
@@ -276,7 +276,7 @@ namespace NadekoBot.Modules.Utility
                             _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
 					.AddField(efb => efb.WithName($"My Cave").WithValue($"https://discord.gg/8kBW525").WithIsInline(true))								
 					.AddField(efb => efb.WithName($"Invite me").WithValue($"http://bit.ly/InvEne").WithIsInline(true))
-					.WithFooter(efb => efb.WithText($"💙 Now with the brandnew XP Module! 💙")));
+					.WithFooter(efb => efb.WithText($"Give Gremagol some love. OwO")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]
