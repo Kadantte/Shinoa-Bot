@@ -258,6 +258,12 @@ namespace NadekoBot.Modules.Utility
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Stats()
         {            
+
+            var sw = Stopwatch.StartNew();
+            var msg = await Context.Channel.SendMessageAsync("Getting Ping...").ConfigureAwait(false);
+            sw.Stop();
+            msg.DeleteAfter(0);
+
             await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
@@ -276,6 +282,7 @@ namespace NadekoBot.Modules.Utility
                             _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
 					.AddField(efb => efb.WithName($"My Cave").WithValue($"https://discord.gg/8kBW525").WithIsInline(true))								
 					.AddField(efb => efb.WithName($"Invite me").WithValue($"http://bit.ly/InvEne").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"Latency").WithValue($"{(int)sw.Elapsed.TotalMilliseconds}ms").WithIsInline(true))
 					.WithFooter(efb => efb.WithText($"Give Gremagol some love. OwO")));
         }
 
