@@ -20,9 +20,9 @@ namespace NadekoBot.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "①.⑨.①";
+        public const string BotVersion = "①.①⓪.①";
 
-        public string Author => "<@199153694464278529> 💙";
+        public string Author => "<@199153694464278529>";
         public string Library => "Discord.Net";
         public string Heap =>
             Math.Round((double)GC.GetTotalMemory(false) / 1.MiB(), 2).ToString(CultureInfo.InvariantCulture);

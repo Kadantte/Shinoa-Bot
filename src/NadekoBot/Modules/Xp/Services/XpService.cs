@@ -713,7 +713,7 @@ namespace NadekoBot.Modules.Xp.Services
                     }
                 }
 
-                return img.Resize(432, 211).ToStream();
+                return img.Resize(800, 392).ToStream();
             }
         });
 
