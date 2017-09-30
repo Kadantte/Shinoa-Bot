@@ -223,7 +223,7 @@ Messages: {MessageCounter} [{MessagesPerSecond:F2}/sec] Heap: [{Heap} MB]");
         public string GetUptimeString(string separator = ", ")
         {
             var time = GetUptime();
-            return $"{time.Days} days{separator}{time.Hours} hours{separator}{time.Minutes} minutes";
+            return $"🕛 **{time.Days}** days{separator}🕓 **{time.Hours}** hours{separator}🕗 **{time.Minutes}** minutes";
         }
     }
 }

@@ -269,20 +269,15 @@ namespace NadekoBot.Modules.Utility
                     .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
                                           .WithUrl("http://enecmdlist.readthedocs.io/en/latest/")
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
-                    .AddField(efb => efb.WithName("My Master").WithValue(_stats.Author).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("botid")).WithValue(_client.CurrentUser.Id.ToString()).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("shard")).WithValue($"#{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("commands_ran")).WithValue(_stats.CommandsRan.ToString()).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("messages")).WithValue($"{_stats.MessageCounter} ({_stats.MessagesPerSecond:F2}/sec)").WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("memory")).WithValue($"{_stats.Heap} MB").WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("owner_ids")).WithValue(string.Join("\n", _creds.OwnerIds)).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("uptime")).WithValue(_stats.GetUptimeString("\n")).WithIsInline(true))				
-                    .AddField(efb => efb.WithName(GetText("presence")).WithValue(
-                        GetText("presence_txt",
-                            _stats.GuildCount, _stats.TextChannels, _stats.VoiceChannels)).WithIsInline(true))
-					.AddField(efb => efb.WithName($"My Cave").WithValue($"https://discord.gg/8kBW525").WithIsInline(true))								
-					.AddField(efb => efb.WithName($"Invite me").WithValue($"http://bit.ly/InvEne").WithIsInline(true))
-                    .AddField(efb => efb.WithName($"Latency").WithValue($"{(int)sw.Elapsed.TotalMilliseconds}ms").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 {_stats.Author}").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"Performance").WithValue($"🔣 **{_stats.CommandsRan.ToString()}** commands \n💬 **{_stats.MessageCounter}** Msgs ({_stats.MessagesPerSecond:F2}/sec) \n💻 **{_stats.Heap}** MB Ram").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Uptime").WithValue($"{_stats.GetUptimeString("\n")}").WithIsInline(true))		
+                    .AddField(efb => efb.WithName($"Presence").WithValue($"👥 **{_stats.GuildCount}** Servers \n✏ **{_stats.TextChannels}** Text Channels \n🔊 **{_stats.VoiceChannels}** Voice Channels").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"Shard").WithValue($"👾 #{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"Latency").WithValue($"📡 **{(int)sw.Elapsed.TotalMilliseconds}** ms").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"Documentation").WithValue($"🛠️ type `.help`").WithIsInline(true))	
+                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://gremagol.com/inv-ene)** \n❤️ My Cave: **[Click Here](https://discord.gg/8kBW525)**").WithIsInline(true))							
+                    .WithImageUrl("https://i.imgur.com/UDHaUMM.gif")
 					.WithFooter(efb => efb.WithText($"Give Gremagol some love. OwO")));
         }
 

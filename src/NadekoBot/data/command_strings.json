@@ -2994,5 +2994,12 @@
     "usage": [
       "{0}feeds"
     ]
+  },
+  "say": {
+    "cmd": "say",
+    "desc": "Bot will send the message you typed in this channel. Supports embeds.",
+    "usage": [
+      "{0}say hi"
+    ]
   }
 }
