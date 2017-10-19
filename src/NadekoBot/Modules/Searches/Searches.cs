@@ -38,9 +38,15 @@ namespace NadekoBot.Modules.Searches
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.ManageMessages)]
         public async Task Say([Remainder]string message)
         {
+
+            Context.Message.DeleteAfter(0);
+
+            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
+
+            await Task.Delay(1000).ConfigureAwait(false);
+
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
