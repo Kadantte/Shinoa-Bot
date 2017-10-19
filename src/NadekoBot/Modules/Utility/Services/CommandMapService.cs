@@ -58,7 +58,6 @@ namespace NadekoBot.Modules.Utility.Services
             Trigger: {1}
             Mapping: {2}", guild.Id, input, newInput);
 
-                        try { await channel.SendConfirmAsync($"{input} => {newInput}").ConfigureAwait(false); } catch { }
                         return newInput;
                     }
                 }

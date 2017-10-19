@@ -276,7 +276,7 @@ namespace NadekoBot.Modules.Utility
                     .AddField(efb => efb.WithName($"Shard").WithValue($"👾 #{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Latency").WithValue($"📡 **{(int)sw.Elapsed.TotalMilliseconds}** ms").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Documentation").WithValue($"🛠️ type `.help`").WithIsInline(true))	
-                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://gremagol.com/inv-ene)** \n❤️ My Cave: **[Click Here](https://discord.gg/8kBW525)**").WithIsInline(true))							
+                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://gremagol.com/inv-ene)** \n❤️ My Cave: **[Click Here](https://gremagol.com/discord)**").WithIsInline(true))							
                     .WithImageUrl("https://i.imgur.com/UDHaUMM.gif")
 					.WithFooter(efb => efb.WithText($"Give Gremagol some love. OwO")));
         }

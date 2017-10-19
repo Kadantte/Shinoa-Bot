@@ -64,7 +64,7 @@ namespace NadekoBot.Modules.Xp.Services
         private Font _awardedFont;
         private Font _rankFont;
         private Font _timeFont;
-            
+
         public XpService(CommandHandler cmd, IBotConfigProvider bc,
             IEnumerable<GuildConfig> allGuildConfigs, IImagesService images,
             DbService db, NadekoStrings strings, IDataCache cache)
@@ -563,11 +563,11 @@ namespace NadekoBot.Modules.Xp.Services
                 var username = stats.User.ToString();
                 var usernameFont = _usernameFontFamily
                     .CreateFont(username.Length <= 6
-                        ? 35
-                        : 35 - username.Length);
+                        ? 45
+                        : 45 - username.Length);
 
                 img.DrawText("" + username, usernameFont, Rgba32.White,
-                    new PointF(95, 29));
+                    new PointF(95, 25));
 
                 // level
 
@@ -579,15 +579,15 @@ namespace NadekoBot.Modules.Xp.Services
 
                 //club name
 
-                var clubName = stats.User.Club?.ToString() ?? "-";
+                var clubName = stats.User.Club?.ToString() ?? "";
 
                 var clubFont = _clubFontFamily
                     .CreateFont(clubName.Length <= 8
-                        ? 25
-                        : 25 - (clubName.Length / 2));
+                        ? 28
+                        : 28 - (clubName.Length / 2));
 
                 img.DrawText(clubName, clubFont, Rgba32.White,
-                    new PointF(112, 97));
+                    new PointF(112, 95));
 
                 var pen = new Pen<Rgba32>(Rgba32.Black, 1);
                 var brush = Brushes.Solid<Rgba32>(Rgba32.White);
