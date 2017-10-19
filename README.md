@@ -7,9 +7,9 @@ how some stuff actually works. If you want to self-host Nadeko, take
 a look here: [Click me](http://nadekobot.readthedocs.io/en/latest/#content)  
 
 [![Discord](https://discordapp.com/api/guilds/284977269892448268/widget.png)](https://discord.gg/8kBW525)
-[![Ene0](http://i.imgur.com/mi5GQ9p.png)](https://discord.gg/8kBW525)
-[![Ene1](http://i.imgur.com/Yutcsal.png)](http://bit.ly/InvEne)
-[![Ene2](http://i.imgur.com/HmjZ8mg.png)](https://discord.gg/8kBW525)
+[![Ene0](https://i.imgur.com/fFdUmKD.png)](https://discord.gg/8kBW525)
+[![Ene1](https://i.imgur.com/opqiNVO.png)](http://bit.ly/InvEne)
+[![Ene2](https://i.imgur.com/1XfvrNL.png)](https://discord.gg/8kBW525)
 
 ## For Help, Guides and Commands:
 

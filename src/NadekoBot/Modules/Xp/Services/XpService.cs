@@ -64,7 +64,7 @@ namespace NadekoBot.Modules.Xp.Services
         private Font _awardedFont;
         private Font _rankFont;
         private Font _timeFont;
-
+            
         public XpService(CommandHandler cmd, IBotConfigProvider bc,
             IEnumerable<GuildConfig> allGuildConfigs, IImagesService images,
             DbService db, NadekoStrings strings, IDataCache cache)
@@ -548,10 +548,10 @@ namespace NadekoBot.Modules.Xp.Services
         {
             _usernameFontFamily = _fonts.Find("Whitney-Bold");
             _clubFontFamily = _fonts.Find("Whitney-Bold");
-            _levelFont = _fonts.Find("Whitney-Bold").CreateFont(45);
-            _xpFont = _fonts.Find("Whitney-Bold").CreateFont(50);
+            _levelFont = _fonts.Find("Whitney-Bold").CreateFont(20);
+            _xpFont = _fonts.Find("Whitney-Bold").CreateFont(25);
             _awardedFont = _fonts.Find("Whitney-Bold").CreateFont(25);
-            _rankFont = _fonts.Find("Uni Sans Thin CAPS").CreateFont(30);
+            _rankFont = _fonts.Find("Whitney-Bold").CreateFont(20);
             _timeFont = _fonts.Find("Whitney-Bold").CreateFont(20);
         }
 
@@ -563,19 +563,19 @@ namespace NadekoBot.Modules.Xp.Services
                 var username = stats.User.ToString();
                 var usernameFont = _usernameFontFamily
                     .CreateFont(username.Length <= 6
-                        ? 50
-                        : 50 - username.Length);
+                        ? 35
+                        : 35 - username.Length);
 
-                img.DrawText("@" + username, usernameFont, Rgba32.White,
-                    new PointF(130, 5));
+                img.DrawText("" + username, usernameFont, Rgba32.White,
+                    new PointF(95, 29));
 
                 // level
 
                 img.DrawText(stats.Global.Level.ToString(), _levelFont, Rgba32.White,
-                    new PointF(47, 137));
+                    new PointF(78, 165));
 
                 img.DrawText(stats.Guild.Level.ToString(), _levelFont, Rgba32.White,
-                    new PointF(47, 285));
+                    new PointF(78, 283));
 
                 //club name
 
@@ -583,55 +583,46 @@ namespace NadekoBot.Modules.Xp.Services
 
                 var clubFont = _clubFontFamily
                     .CreateFont(clubName.Length <= 8
-                        ? 35
-                        : 35 - (clubName.Length / 2));
+                        ? 25
+                        : 25 - (clubName.Length / 2));
 
                 img.DrawText(clubName, clubFont, Rgba32.White,
-                    new PointF(650 - clubName.Length * 10, 40));
+                    new PointF(112, 97));
 
                 var pen = new Pen<Rgba32>(Rgba32.Black, 1);
                 var brush = Brushes.Solid<Rgba32>(Rgba32.White);
-                var xpBgBrush = Brushes.Solid<Rgba32>(new Rgba32(0, 0, 0, 0.4f));
+                var XpBrush = Brushes.Solid<Rgba32>(new Rgba32(92,185,255,255)); 
 
                 var global = stats.Global;
                 var guild = stats.Guild;
 
                 //xp bar
 
-                img.FillPolygon(xpBgBrush, new[] {
-                    new PointF(321, 104),
-                    new PointF(321 + (450 * (global.LevelXp / (float)global.RequiredXp)), 104),
-                    new PointF(286 + (450 * (global.LevelXp / (float)global.RequiredXp)), 235),
-                    new PointF(286, 235),
+                img.FillPolygon(XpBrush, new[] {
+                    new PointF(232, 260),
+                    new PointF(232, 260 - (97 * (global.LevelXp / (float)global.RequiredXp))),
+                    new PointF(240, 260 - (97 * (global.LevelXp / (float)global.RequiredXp))),
+                    new PointF(240, 260),
                 });
                 img.DrawText($"{global.LevelXp}/{global.RequiredXp}", _xpFont, brush, pen,
-                    new PointF(430, 130));
+                    new PointF(115, 160));
 
-                img.FillPolygon(xpBgBrush, new[] {
-                    new PointF(282, 248),
-                    new PointF(282 + (450 * (guild.LevelXp / (float)guild.RequiredXp)), 248),
-                    new PointF(247 + (450 * (guild.LevelXp / (float)guild.RequiredXp)), 379),
-                    new PointF(247, 379),
+                img.FillPolygon(XpBrush, new[] {
+                    new PointF(232, 378),
+                    new PointF(232, 378 - (97 * (guild.LevelXp / (float)guild.RequiredXp))),
+                    new PointF(240, 378 - (97 * (guild.LevelXp / (float)guild.RequiredXp))),
+                    new PointF(240, 378),
                 });
                 img.DrawText($"{guild.LevelXp}/{guild.RequiredXp}", _xpFont, brush, pen,
-                    new PointF(400, 270));
-
-                if (stats.FullGuildStats.AwardedXp != 0)
-                {
-                    var sign = stats.FullGuildStats.AwardedXp > 0
-                        ? "+ "
-                        : "";
-                    img.DrawText($"({sign}{stats.FullGuildStats.AwardedXp})", _awardedFont, brush, pen,
-                        new PointF(445 - (Math.Max(0, (stats.FullGuildStats.AwardedXp.ToString().Length - 2)) * 5), 335));
-                }
+                    new PointF(115, 278));
 
                 //ranking
 
                 img.DrawText(stats.GlobalRanking.ToString(), _rankFont, Rgba32.White,
-                    new PointF(148, 170));
+                    new PointF(78, 195));
 
                 img.DrawText(stats.GuildRanking.ToString(), _rankFont, Rgba32.White,
-                    new PointF(148, 317));
+                    new PointF(78, 313));
 
                 //time on this level
 
@@ -642,10 +633,10 @@ namespace NadekoBot.Modules.Xp.Services
                 }
 
                 img.DrawText(GetTimeSpent(stats.User.LastLevelUp), _timeFont, Rgba32.White,
-                    new PointF(50, 197));
+                    new PointF(78, 224));
 
                 img.DrawText(GetTimeSpent(stats.FullGuildStats.LastLevelUp), _timeFont, Rgba32.White,
-                    new PointF(50, 344));
+                    new PointF(78, 342));
 
                 //avatar
 
@@ -659,7 +650,7 @@ namespace NadekoBot.Modules.Xp.Services
                         if (!succ)
                         {
                             using (var temp = await http.GetStreamAsync(avatarUrl))
-                            using (var tempDraw = Image.Load(temp).Resize(69, 70))
+                            using (var tempDraw = Image.Load(temp).Resize(70, 70))
                             {
                                 ApplyRoundedCorners(tempDraw, 35);
                                 data = tempDraw.ToStream().ToArray();
@@ -672,8 +663,8 @@ namespace NadekoBot.Modules.Xp.Services
 
                         img.DrawImage(toDraw,
                             1,
-                            new Size(69, 70),
-                            new Point(32, 10));
+                            new Size(70, 70),
+                            new Point(17, 17));
                     }
                     catch (Exception ex)
                     {
@@ -705,7 +696,7 @@ namespace NadekoBot.Modules.Xp.Services
                         img.DrawImage(toDraw,
                             1,
                             new Size(45, 45),
-                            new Point(722, 25));
+                            new Point(61, 90));
                     }
                     catch (Exception ex)
                     {
@@ -713,7 +704,7 @@ namespace NadekoBot.Modules.Xp.Services
                     }
                 }
 
-                return img.Resize(800, 392).ToStream();
+                return img.ToStream();
             }
         });
 

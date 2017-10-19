@@ -61,7 +61,7 @@
   },
   "greetmsg": {
     "Cmd": "greetmsg",
-    "Desc": "Sets a new join announcement message which will be shown in the server's channel. Type `%user%` if you want to mention the new member. Using it with no message will show the current greet message. You can use embed json from <http://nadekobot.me/embedbuilder/> instead of a regular text, if you want the message to be embedded.",
+    "Desc": "Sets a new join announcement message which will be shown in the server's channel. Type `%user%` if you want to mention the new member. Using it with no message will show the current greet message. You can use embed json from <https://gremagol.com/embed-generator/> instead of a regular text, if you want the message to be embedded.",
     "Usage": [
       "{0}greetmsg Welcome, %user%."
     ]
@@ -75,7 +75,7 @@
   },
   "byemsg": {
     "Cmd": "byemsg",
-    "Desc": "Sets a new leave announcement message. Type `%user%` if you want to show the name the user who left. Type `%id%` to show id. Using this command with no message will show the current bye message. You can use embed json from <http://nadekobot.me/embedbuilder/> instead of a regular text, if you want the message to be embedded.",
+    "Desc": "Sets a new leave announcement message. Type `%user%` if you want to show the name the user who left. Type `%id%` to show id. Using this command with no message will show the current bye message. You can use embed json from <https://gremagol.com/embed-generator/> instead of a regular text, if you want the message to be embedded.",
     "Usage": [
       "{0}byemsg %user% has left."
     ]
@@ -254,7 +254,7 @@
   },
   "addcustreact": {
     "Cmd": "addcustreact acr",
-    "Desc": "Add a custom reaction with a trigger and a response. Running this command in server requires the Administration permission. Running this command in DM is Bot Owner only and adds a new global custom reaction. Guide here: <http://nadekobot.readthedocs.io/en/latest/Custom%20Reactions/>",
+    "Desc": "Add a custom reaction with a trigger and a response. Running this command in server requires the Administration permission. Running this command in DM is Bot Owner only and adds a new global custom reaction. Guide here: <http://enecmdlist.readthedocs.io/en/latest/Custom%20Reactions/>",
     "Usage": [
       "{0}acr \"hello\" Hi there %user%"
     ]
@@ -297,7 +297,7 @@
   },
   "leave": {
     "Cmd": "leave",
-    "Desc": "Makes Nadeko leave the server. Either server name or server ID is required.",
+    "Desc": "Makes Ene leave the server. Either server name or server ID is required.",
     "Usage": [
       "{0}leave 123123123331"
     ]
@@ -455,7 +455,7 @@
   },
   "prune": {
     "Cmd": "prune clear",
-    "Desc": "`{0}prune` removes all Nadeko's messages in the last 100 messages. `{0}prune X` removes last `X` number of messages from the channel (up to 100). `{0}prune @Someone` removes all Someone's messages in the last 100 messages. `{0}prune @Someone X` removes last `X` number of 'Someone's' messages in the channel.",
+    "Desc": "`{0}prune` removes all Ene's messages in the last 100 messages. `{0}prune X` removes last `X` number of messages from the channel (up to 100). `{0}prune @Someone` removes all Someone's messages in the last 100 messages. `{0}prune @Someone X` removes last `X` number of 'Someone's' messages in the channel.",
     "Usage": [
       "{0}prune",
       "{0}prune 5",
@@ -487,7 +487,7 @@
   },
   "setavatar": {
     "Cmd": "setavatar setav",
-    "Desc": "Sets a new avatar image for the NadekoBot. Argument is a direct link to an image.",
+    "Desc": "Sets a new avatar image for Ene. Argument is a direct link to an image.",
     "Usage": [
       "{0}setav http://i.imgur.com/xTG3a1I.jpg"
     ]
@@ -601,7 +601,7 @@
   },
   "stats": {
     "Cmd": "stats",
-    "Desc": "Shows some basic stats for Nadeko.",
+    "Desc": "Shows some basic stats for Ene.",
     "Usage": [
       "{0}stats"
     ]
@@ -687,7 +687,7 @@
   },
   "permrole": {
     "Cmd": "permrole pr",
-    "Desc": "Sets a role which can change permissions. Supply no parameters to see the current one. Default is 'Nadeko'.",
+    "Desc": "Sets a role which can change permissions. Supply no parameters to see the current one. Default is 'Ene'.",
     "Usage": [
       "{0}pr role"
     ]
@@ -814,17 +814,17 @@
     ]
   },
   "addquote": {
-    "Cmd": ".",
+    "Cmd": "aq",
     "Desc": "Adds a new quote with the specified name and message.",
     "Usage": [
-      "{0}. sayhi Hi"
+      "{0}aq sayhi Hi"
     ]
   },
   "showquote": {
-    "Cmd": "..",
+    "Cmd": ".",
     "Desc": "Shows a random quote with a specified name.",
     "Usage": [
-      "{0}.. abc"
+      "{0}. sayhi"
     ]
   },
   "quotesearch": {
@@ -1082,7 +1082,7 @@
   },
   "rps": {
     "Cmd": "rps",
-    "Desc": "Play a game of Rocket-Paperclip-Scissors with Nadeko.",
+    "Desc": "Play a game of Rocket-Paperclip-Scissors with Ene.",
     "Usage": [
       "{0}rps scissors"
     ]
@@ -1482,7 +1482,7 @@
     ]
   },
   "anime": {
-    "Cmd": "anime ani aq",
+    "Cmd": "anime ani",
     "Desc": "Queries anilist for an anime and shows the first result.",
     "Usage": [
       "{0}ani aquarion evol"
@@ -1744,7 +1744,7 @@
   },
   "greetdmmsg": {
     "Cmd": "greetdmmsg",
-    "Desc": "Sets a new join announcement message which will be sent to the user who joined. Type `%user%` if you want to mention the new member. Using it with no message will show the current DM greet message. You can use embed json from <http://nadekobot.me/embedbuilder/> instead of a regular text, if you want the message to be embedded.",
+    "Desc": "Sets a new join announcement message which will be sent to the user who joined. Type `%user%` if you want to mention the new member. Using it with no message will show the current DM greet message. You can use embed json from <https://gremagol.com/embed-generator/> instead of a regular text, if you want the message to be embedded.",
     "Usage": [
       "{0}greetdmmsg Welcome to the server, %user%`"
     ]
@@ -1874,7 +1874,7 @@
   },
   "setmuterole": {
     "Cmd": "setmuterole",
-    "Desc": "Sets a name of the role which will be assigned to people who should be muted. Default is nadeko-mute.",
+    "Desc": "Sets a name of the role which will be assigned to people who should be muted. Default is ene-mute.",
     "Usage": [
       "{0}setmuterole Silenced"
     ]
@@ -2279,7 +2279,7 @@
   },
   "startevent": {
     "Cmd": "event",
-    "Desc": "Starts one of the events seen on public nadeko. `reaction` and `sneakygamestatus` are the only 2 available now.",
+    "Desc": "Starts one of the events seen on public Ene. `reaction` and `sneakygamestatus` are the only 2 available now.",
     "Usage": [
       "{0}event reaction"
     ]
@@ -2300,7 +2300,7 @@
   },
   "slot": {
     "Cmd": "slot",
-    "Desc": "Play Nadeko slots. Max bet is 9999. 1.5 second cooldown per user.",
+    "Desc": "Play Ene slots. Max bet is 9999. 1.5 second cooldown per user.",
     "Usage": [
       "{0}slot 5"
     ]
@@ -2508,7 +2508,7 @@
   },
   "alias": {
     "Cmd": "alias cmdmap",
-    "Desc": "Create a custom alias for a certain Nadeko command. Provide no alias to remove the existing one.",
+    "Desc": "Create a custom alias for a certain Ene command. Provide no alias to remove the existing one.",
     "Usage": [
       "{0}alias allin $bf 100 h",
       "{0}alias \"linux thingy\" >loonix Spyware Windows"
