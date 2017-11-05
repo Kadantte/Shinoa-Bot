@@ -13,15 +13,21 @@ namespace NadekoBot.Core.Services.Database.Models
             Cookie,
             Rose,
             LoveLetter,
+            Toast,
             Chocolate,
+            Banana,
             Rice,
             MovieTicket,
             Book,
             Lipstick,
             Laptop,
-            Violin,
+            Game,
             Ring,
-            Helicopter,
+            Diamond,
+            Cate,
+            Doge,
+            Car,
+            House,
         }
 
         public WaifuItem()
@@ -46,8 +52,12 @@ namespace NadekoBot.Core.Services.Database.Models
                     return new WaifuItem("🌹", 50, itemName);
                 case ItemName.LoveLetter:
                     return new WaifuItem("💌", 100, itemName);
+                case ItemName.Toast:
+                    return new WaifuItem("🍞", 150, itemName);
                 case ItemName.Chocolate:
                     return new WaifuItem("🍫", 200, itemName);
+                case ItemName.Banana:
+                    return new WaifuItem("🍌", 200, itemName);
                 case ItemName.Rice:
                     return new WaifuItem("🍚", 400, itemName);
                 case ItemName.MovieTicket:
@@ -58,13 +68,22 @@ namespace NadekoBot.Core.Services.Database.Models
                     return new WaifuItem("💄", 3000, itemName);
                 case ItemName.Laptop:
                     return new WaifuItem("💻", 5000, itemName);
-                case ItemName.Violin:
-                    return new WaifuItem("🎻", 7500, itemName);
+                case ItemName.Game:
+                    return new WaifuItem("🎮", 7500, itemName);
                 case ItemName.Ring:
                     return new WaifuItem("💍", 10000, itemName);
-                case ItemName.Helicopter:
-                    return new WaifuItem("🚁", 20000, itemName);
+                case ItemName.Diamond:
+                    return new WaifuItem("💎", 20000, itemName);
+                case ItemName.Cate:
+                    return new WaifuItem("🐈", 50000, itemName);
+                case ItemName.Doge:
+                    return new WaifuItem("🐕", 50000, itemName);
+                case ItemName.Car:
+                    return new WaifuItem("🚗", 75000, itemName);
+                case ItemName.House:
+                    return new WaifuItem("🏠", 100000, itemName);                    
                 default:
+
                     throw new ArgumentException(nameof(itemName));
             }
         }
