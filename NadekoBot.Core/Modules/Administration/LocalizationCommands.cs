@@ -28,6 +28,7 @@ namespace NadekoBot.Modules.Administration
                 {"da-DK", "Dansk, Danmark" },
                 {"de-DE", "Deutsch, Deutschland"},
                 {"he-IL", "עברית, ישראל"},
+                {"hu-HU", "Magyar, Magyarország" },
                 {"id-ID", "Bahasa Indonesia, Indonesia" },
                 {"it-IT", "Italiano, Italia" },
                 {"ja-JP", "日本語, 日本"},
@@ -40,11 +41,13 @@ namespace NadekoBot.Modules.Administration
                 {"sr-Cyrl-RS", "Српски, Србија"},
                 {"es-ES", "Español, España"},
                 {"sv-SE", "Svenska, Sverige"},
-                {"tr-TR", "Türkçe, Türkiye"}
+                {"tr-TR", "Türkçe, Türkiye"},
+                {"ts-TS", "Tsundere, You Baka"},
             }.ToImmutableDictionary();
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
+            [Priority(0)]
             public async Task LanguageSet()
             {
                 var cul = _localization.GetCultureInfo(Context.Guild);
@@ -55,6 +58,7 @@ namespace NadekoBot.Modules.Administration
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.Administrator)]
+            [Priority(1)]
             public async Task LanguageSet(string name)
             {
                 try

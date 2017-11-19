@@ -61,7 +61,7 @@ namespace NadekoBot
             if (shardId < 0)
                 throw new ArgumentOutOfRangeException(nameof(shardId));
 
-            LogSetup.SetupLogger();
+            LogSetup.SetupLogger(shardId);
             _log = LogManager.GetCurrentClassLogger();
             TerribleElevatedPermissionCheck();
 
@@ -129,7 +129,7 @@ namespace NadekoBot
             {
                 AllGuildConfigs = uow.GuildConfigs.GetAllGuildConfigs(startingGuildIdList).ToImmutableArray();
 
-                IBotConfigProvider botConfigProvider = new BotConfigProvider(_db, _botConfig);
+                IBotConfigProvider botConfigProvider = new BotConfigProvider(_db, _botConfig, Cache);
 
                 //initialize Services
                 Services = new NServiceProvider()

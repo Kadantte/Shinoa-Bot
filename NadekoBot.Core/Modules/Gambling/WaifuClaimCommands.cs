@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using NadekoBot.Common;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.Gambling.Services;
+using Discord.WebSocket;
 
 namespace NadekoBot.Modules.Gambling
 {
@@ -54,12 +55,20 @@ namespace NadekoBot.Modules.Gambling
                 NotEnoughFunds,
                 InsufficientAmount
             }
+            private readonly IBotConfigProvider _bc;
+            private readonly CurrencyService _cs;
+            private readonly DbService _db;
+            private readonly IDataCache _cache;
+            private readonly DiscordSocketClient _client;
 
-            public WaifuClaimCommands(IBotConfigProvider bc, CurrencyService cs, DbService db)
+            public WaifuClaimCommands(IDataCache cache, IBotConfigProvider bc,
+                CurrencyService cs, DbService db, DiscordSocketClient client)
             {
                 _bc = bc;
                 _cs = cs;
                 _db = db;
+                _cache = cache;
+                _client = client;
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -183,6 +192,23 @@ namespace NadekoBot.Modules.Gambling
                 await Context.Channel.SendConfirmAsync(Context.User.Mention + msg).ConfigureAwait(false);
             }
 
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            public async Task WaifuTransfer(IUser waifu, IUser newOwner)
+            {
+                if(!await _service.WaifuTransfer(Context.User, waifu.Id, newOwner)
+                    .ConfigureAwait(false))
+                {
+                    await ReplyErrorLocalized("waifu_transfer_fail").ConfigureAwait(false);
+                    return;
+                }
+
+                await ReplyConfirmLocalized("waifu_transfer_success",
+                    Format.Bold(waifu.ToString()),
+                    Format.Bold(Context.User.ToString()),
+                    Format.Bold(newOwner.ToString())).ConfigureAwait(false);
+            }
+
             public enum DivorceResult
             {
                 Success,
@@ -191,8 +217,6 @@ namespace NadekoBot.Modules.Gambling
                 Cooldown
             }
 
-
-            private static readonly TimeSpan _divorceLimit = TimeSpan.FromHours(6);
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [Priority(0)]
@@ -207,7 +231,7 @@ namespace NadekoBot.Modules.Gambling
                     return;
 
                 DivorceResult result;
-                var difference = TimeSpan.Zero;
+                TimeSpan? remaining = null;
                 var amount = 0;
                 WaifuInfo w = null;
                 using (var uow = _db.UnitOfWork)
@@ -216,9 +240,7 @@ namespace NadekoBot.Modules.Gambling
                     var now = DateTime.UtcNow;
                     if (w?.Claimer == null || w.Claimer.UserId != Context.User.Id)
                         result = DivorceResult.NotYourWife;
-                    else if (_service.DivorceCooldowns.AddOrUpdate(Context.User.Id,
-                        now,
-                        (key, old) => ((difference = now.Subtract(old)) > _divorceLimit) ? now : old) != now)
+                    else if (!_cache.TryAddDivorceCooldown(Context.User.Id, out remaining))
                     {
                         result = DivorceResult.Cooldown;
                     }
@@ -267,17 +289,11 @@ namespace NadekoBot.Modules.Gambling
                 }
                 else
                 {
-                    var remaining = _divorceLimit.Subtract(difference);
                     await ReplyErrorLocalized("waifu_recent_divorce", 
-                        Format.Bold(((int)remaining.TotalHours).ToString()),
-                        Format.Bold(remaining.Minutes.ToString())).ConfigureAwait(false);
+                        Format.Bold(((int)remaining?.TotalHours).ToString()),
+                        Format.Bold(remaining?.Minutes.ToString())).ConfigureAwait(false);
                 }
             }
-
-            private static readonly TimeSpan _affinityLimit = TimeSpan.FromMinutes(30);
-            private readonly IBotConfigProvider _bc;
-            private readonly CurrencyService _cs;
-            private readonly DbService _db;
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
@@ -290,8 +306,7 @@ namespace NadekoBot.Modules.Gambling
                 }
                 DiscordUser oldAff = null;
                 var sucess = false;
-                var cooldown = false;
-                var difference = TimeSpan.Zero;
+                TimeSpan? remaining = null;
                 using (var uow = _db.UnitOfWork)
                 {
                     var w = uow.Waifus.ByWaifuUserId(Context.User.Id);
@@ -299,12 +314,10 @@ namespace NadekoBot.Modules.Gambling
                     var now = DateTime.UtcNow;
                     if (w?.Affinity?.UserId == u?.Id)
                     {
+
                     }
-                    else if (_service.AffinityCooldowns.AddOrUpdate(Context.User.Id,
-                        now,
-                        (key, old) => ((difference = now.Subtract(old)) > _affinityLimit) ? now : old) != now)
+                    else if (!_cache.TryAddAffinityCooldown(Context.User.Id, out remaining))
                     {
-                        cooldown = true;
                     }
                     else if (w == null)
                     {
@@ -346,12 +359,11 @@ namespace NadekoBot.Modules.Gambling
                 }
                 if (!sucess)
                 {
-                    if (cooldown)
+                    if (remaining != null)
                     {
-                        var remaining = _affinityLimit.Subtract(difference);
                         await ReplyErrorLocalized("waifu_affinity_cooldown", 
-                            Format.Bold(((int)remaining.TotalHours).ToString()),
-                            Format.Bold(remaining.Minutes.ToString())).ConfigureAwait(false);
+                            Format.Bold(((int)remaining?.TotalHours).ToString()),
+                            Format.Bold(remaining?.Minutes.ToString())).ConfigureAwait(false);
                     }
                     else
                     {
@@ -465,18 +477,27 @@ namespace NadekoBot.Modules.Gambling
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [Priority(1)]
-            public async Task WaifuGift()
+            public async Task WaifuGift(int page = 1)
             {
-                var embed = new EmbedBuilder()
-                    .WithTitle(GetText("waifu_gift_shop"))
-                    .WithOkColor();
+                if (--page < 0 || page > 2)
+                    return;
 
-                Enum.GetValues(typeof(WaifuItem.ItemName))
-                    .Cast<WaifuItem.ItemName>()
-                    .Select(x => WaifuItem.GetItem(x))
-                    .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + x.Item).WithValue(x.Price).WithIsInline(true)));
+                await Context.Channel.SendPaginatedConfirmAsync(_client, page, (cur) =>
+                {
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("waifu_gift_shop"))
+                        .WithOkColor();
 
-                    await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                    Enum.GetValues(typeof(WaifuItem.ItemName))
+                                        .Cast<WaifuItem.ItemName>()
+                                        .Select(x => WaifuItem.GetItem(x))
+                                        .OrderBy(x => x.Price)
+                                        .Skip(9 * cur)
+                                        .Take(9)
+                                        .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + x.Item).WithValue(x.Price).WithIsInline(true)));
+
+                    return embed;
+                }, Enum.GetValues(typeof(WaifuItem.ItemName)).Length, 9);
             }
 
             [NadekoCommand, Usage, Description, Aliases]

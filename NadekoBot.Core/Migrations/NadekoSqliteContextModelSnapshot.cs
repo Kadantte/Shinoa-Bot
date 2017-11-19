@@ -983,6 +983,67 @@ namespace NadekoBot.Migrations
                     b.ToTable("PlaylistSong");
                 });
 
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.Poll", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<ulong>("ChannelId");
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<ulong>("GuildId");
+
+                    b.Property<string>("Question");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId")
+                        .IsUnique();
+
+                    b.ToTable("Poll");
+                });
+
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.PollAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<int>("Index");
+
+                    b.Property<int?>("PollId");
+
+                    b.Property<string>("Text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("PollAnswer");
+                });
+
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.PollVote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<int?>("PollId");
+
+                    b.Property<ulong>("UserId");
+
+                    b.Property<int>("VoteIndex");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("PollVote");
+                });
+
             modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.Quote", b =>
                 {
                     b.Property<int>("Id")
@@ -1087,6 +1148,8 @@ namespace NadekoBot.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<ulong>("GuildId");
+
+                    b.Property<int>("LevelRequirement");
 
                     b.Property<ulong>("RoleId");
 
@@ -1488,6 +1551,26 @@ namespace NadekoBot.Migrations
                     b.ToTable("WarningPunishment");
                 });
 
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.XpCurrencyReward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Amount");
+
+                    b.Property<DateTime?>("DateAdded");
+
+                    b.Property<int>("Level");
+
+                    b.Property<int>("XpSettingsId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("XpSettingsId");
+
+                    b.ToTable("XpCurrencyReward");
+                });
+
             modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.XpRoleReward", b =>
                 {
                     b.Property<int>("Id")
@@ -1771,6 +1854,20 @@ namespace NadekoBot.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.PollAnswer", b =>
+                {
+                    b.HasOne("NadekoBot.Core.Services.Database.Models.Poll")
+                        .WithMany("Answers")
+                        .HasForeignKey("PollId");
+                });
+
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.PollVote", b =>
+                {
+                    b.HasOne("NadekoBot.Core.Services.Database.Models.Poll")
+                        .WithMany("Votes")
+                        .HasForeignKey("PollId");
+                });
+
             modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.RaceAnimal", b =>
                 {
                     b.HasOne("NadekoBot.Core.Services.Database.Models.BotConfig")
@@ -1893,6 +1990,14 @@ namespace NadekoBot.Migrations
                     b.HasOne("NadekoBot.Core.Services.Database.Models.GuildConfig")
                         .WithMany("WarnPunishments")
                         .HasForeignKey("GuildConfigId");
+                });
+
+            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.XpCurrencyReward", b =>
+                {
+                    b.HasOne("NadekoBot.Core.Services.Database.Models.XpSettings", "XpSettings")
+                        .WithMany("CurrencyRewards")
+                        .HasForeignKey("XpSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.XpRoleReward", b =>

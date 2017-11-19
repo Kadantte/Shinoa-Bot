@@ -17,12 +17,12 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using AngleSharp;
 using System.Threading;
-using NadekoBot.Modules.Searches.Exceptions;
 using ImageSharp;
 using Image = ImageSharp.Image;
 using SixLabors.Primitives;
 using SixLabors.Fonts;
 using NadekoBot.Core.Services.Impl;
+using NadekoBot.Core.Modules.Searches.Common;
 
 namespace NadekoBot.Modules.Searches.Services
 {
@@ -34,33 +34,52 @@ namespace NadekoBot.Modules.Searches.Services
         private readonly IGoogleApiService _google;
         private readonly DbService _db;
         private readonly Logger _log;
-        private readonly IImagesService _imgs;
+        private readonly IImageCache _imgs;
         private readonly IDataCache _cache;
         private readonly FontProvider _fonts;
-        private readonly HttpClient http;
 
         public ConcurrentDictionary<ulong, bool> TranslatedChannels { get; } = new ConcurrentDictionary<ulong, bool>();
         public ConcurrentDictionary<UserChannelPair, string> UserLanguages { get; } = new ConcurrentDictionary<UserChannelPair, string>();
-        
-        public readonly string PokemonAbilitiesFile = "data/pokemon/pokemon_abilities7.json";
-
-        public readonly string PokemonListFile = "data/pokemon/pokemon_list7.json";
-        public Dictionary<string, SearchPokemon> Pokemons { get; } = new Dictionary<string, SearchPokemon>();
-        public Dictionary<string, SearchPokemonAbility> PokemonAbilities { get; } = new Dictionary<string, SearchPokemonAbility>();
 
         public List<WoWJoke> WowJokes { get; } = new List<WoWJoke>();
         public List<MagicItem> MagicItems { get; } = new List<MagicItem>();
 
         private readonly ConcurrentDictionary<ulong, SearchImageCacher> _imageCacher = new ConcurrentDictionary<ulong, SearchImageCacher>();
-        
+
         public ConcurrentDictionary<ulong, Timer> AutoHentaiTimers { get; } = new ConcurrentDictionary<ulong, Timer>();
         public ConcurrentDictionary<ulong, Timer> AutoBoobTimers { get; } = new ConcurrentDictionary<ulong, Timer>();
         public ConcurrentDictionary<ulong, Timer> AutoButtTimers { get; } = new ConcurrentDictionary<ulong, Timer>();
 
         private readonly ConcurrentDictionary<ulong, HashSet<string>> _blacklistedTags = new ConcurrentDictionary<ulong, HashSet<string>>();
 
+        private readonly SemaphoreSlim _cryptoLock = new SemaphoreSlim(1, 1);
+        public async Task<CryptoData[]> CryptoData()
+        {
+            string data;
+            var r = _cache.Redis.GetDatabase();
+            await _cryptoLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                data = await r.StringGetAsync("crypto_data").ConfigureAwait(false);
+
+                if (data == null)
+                {
+                    data = await Http.GetStringAsync("https://api.coinmarketcap.com/v1/ticker/")
+                        .ConfigureAwait(false);
+
+                    await r.StringSetAsync("crypto_data", data, TimeSpan.FromHours(1)).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _cryptoLock.Release();
+            }
+
+            return JsonConvert.DeserializeObject<CryptoData[]>(data);
+        }
+
         public SearchesService(DiscordSocketClient client, IGoogleApiService google, 
-            DbService db, NadekoBot bot, IImagesService imgs, IDataCache cache,
+            DbService db, NadekoBot bot, IDataCache cache,
             FontProvider fonts)
         {
             Http = new HttpClient();
@@ -69,10 +88,9 @@ namespace NadekoBot.Modules.Searches.Services
             _google = google;
             _db = db;
             _log = LogManager.GetCurrentClassLogger();
-            _imgs = imgs;
+            _imgs = cache.LocalImages;
             _cache = cache;
             _fonts = fonts;
-            http = new HttpClient();
 
             _blacklistedTags = new ConcurrentDictionary<ulong, HashSet<string>>(
                 bot.AllGuildConfigs.ToDictionary(
@@ -113,18 +131,6 @@ namespace NadekoBot.Modules.Searches.Services
                 return Task.CompletedTask;
             };
 
-            //pokemon commands
-            if (File.Exists(PokemonListFile))
-            {
-                Pokemons = JsonConvert.DeserializeObject<Dictionary<string, SearchPokemon>>(File.ReadAllText(PokemonListFile));
-            }
-            else
-                _log.Warn(PokemonListFile + " is missing. Pokemon abilities not loaded.");
-            if (File.Exists(PokemonAbilitiesFile))
-                PokemonAbilities = JsonConvert.DeserializeObject<Dictionary<string, SearchPokemonAbility>>(File.ReadAllText(PokemonAbilitiesFile));
-            else
-                _log.Warn(PokemonAbilitiesFile + " is missing. Pokemon abilities not loaded.");
-
             //joke commands
             if (File.Exists("data/wowjokes.json"))
             {
@@ -146,7 +152,7 @@ namespace NadekoBot.Modules.Searches.Services
             var (succ, data) = await _cache.TryGetImageDataAsync(imgUrl);
             if (!succ)
             {
-                using (var temp = await http.GetAsync(imgUrl, HttpCompletionOption.ResponseHeadersRead))
+                using (var temp = await Http.GetAsync(imgUrl, HttpCompletionOption.ResponseHeadersRead))
                 {
                     if (temp.Content.Headers.ContentType.MediaType != "image/png"
                         && temp.Content.Headers.ContentType.MediaType != "image/jpeg"

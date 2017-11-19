@@ -29,19 +29,18 @@ namespace NadekoBot.Modules.Administration
 
             private static readonly object _locker = new object();
             private readonly DiscordSocketClient _client;
-            private readonly IImagesService _images;
+            private readonly IImageCache _images;
             private readonly IBotConfigProvider _bc;
             private readonly NadekoBot _bot;
             private readonly IBotCredentials _creds;
             private readonly IDataCache _cache;
 
             public SelfCommands(DbService db, NadekoBot bot, DiscordSocketClient client,
-                IImagesService images, IBotConfigProvider bc,
-                IBotCredentials creds, IDataCache cache)
+                IBotConfigProvider bc, IBotCredentials creds, IDataCache cache)
             {
                 _db = db;
                 _client = client;
-                _images = images;
+                _images = cache.LocalImages;
                 _bc = bc;
                 _bot = bot;
                 _creds = creds;
@@ -273,7 +272,7 @@ namespace NadekoBot.Modules.Administration
                     return;
                 }
                 var pub = _cache.Redis.GetSubscriber();
-                pub.Publish(_creds.RedisKey() + "_shard_restart", 
+                pub.Publish(_creds.RedisKey() + "_shardcoord_restart", 
                     JsonConvert.SerializeObject(_client.ShardId),
                     StackExchange.Redis.CommandFlags.FireAndForget);
                 await ReplyConfirmLocalized("shard_reconnecting", Format.Bold("#" + shardid)).ConfigureAwait(false);
@@ -486,9 +485,11 @@ namespace NadekoBot.Modules.Administration
             public async Task ReloadImages()
             {
                 var sw = Stopwatch.StartNew();
-                _images.Reload();
-                sw.Stop();
-                await ReplyConfirmLocalized("images_loaded", sw.Elapsed.TotalSeconds.ToString("F3")).ConfigureAwait(false);
+                var sub = _cache.Redis.GetSubscriber();
+                sub.Publish(_creds.RedisKey() + "_reload_images", 
+                    "",
+                    StackExchange.Redis.CommandFlags.FireAndForget);
+                await ReplyConfirmLocalized("images_loaded", 0).ConfigureAwait(false);
             }
 
             private static UserStatus SettableUserStatusToUserStatus(SettableUserStatus sus)

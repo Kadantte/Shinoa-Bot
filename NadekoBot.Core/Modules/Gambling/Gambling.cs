@@ -54,7 +54,7 @@ namespace NadekoBot.Modules.Gambling
             TimeSpan? rem;
             if ((rem = _cache.AddTimelyClaim(Context.User.Id, period)) != null)
             {
-                await ReplyErrorLocalized("timely_already_claimed", rem?.ToString(@"hh\:mm\:ss")).ConfigureAwait(false);
+                await ReplyErrorLocalized("timely_already_claimed", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
                 return;
             }
 
@@ -105,6 +105,22 @@ namespace NadekoBot.Modules.Gambling
             }
             var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
             await Context.Channel.SendConfirmAsync("🎟 "+ GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}**", footer: $"ID: {usr.Id}").ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        public async Task RaffleAny([Remainder] IRole role = null)
+        {
+            role = role ?? Context.Guild.EveryoneRole;
+
+            var members = (await role.GetMembersAsync());
+            var membersArray = members as IUser[] ?? members.ToArray();
+            if (membersArray.Length == 0)
+            {
+                return;
+            }
+            var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}**", footer: $"ID: {usr.Id}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -262,9 +278,9 @@ namespace NadekoBot.Modules.Gambling
         //    });
         //    return Task.CompletedTask;
         //}
+        public enum Allin { Allin = int.MinValue, All = int.MinValue }
 
-        [NadekoCommand, Usage, Description, Aliases]
-        public async Task BetRoll(long amount)
+        private async Task InternallBetroll(long amount)
         {
             if (amount < 1)
                 return;
@@ -287,22 +303,37 @@ namespace NadekoBot.Modules.Gambling
                 {
                     str += GetText("br_win", (amount * _bc.BotConfig.Betroll67Multiplier) + CurrencySign, 66);
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
-                        (int) (amount * _bc.BotConfig.Betroll67Multiplier), false).ConfigureAwait(false);
+                        (int)(amount * _bc.BotConfig.Betroll67Multiplier), false).ConfigureAwait(false);
                 }
                 else if (rnd < 100)
                 {
                     str += GetText("br_win", (amount * _bc.BotConfig.Betroll91Multiplier) + CurrencySign, 90);
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
-                        (int) (amount * _bc.BotConfig.Betroll91Multiplier), false).ConfigureAwait(false);
+                        (int)(amount * _bc.BotConfig.Betroll91Multiplier), false).ConfigureAwait(false);
                 }
                 else
                 {
-                    str += GetText("br_win", (amount * _bc.BotConfig.Betroll100Multiplier) + CurrencySign, 100) + " 👑";
+                    str += GetText("br_win", (amount * _bc.BotConfig.Betroll100Multiplier) + CurrencySign, 99) + " 👑";
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
-                        (int) (amount * _bc.BotConfig.Betroll100Multiplier), false).ConfigureAwait(false);
+                        (int)(amount * _bc.BotConfig.Betroll100Multiplier), false).ConfigureAwait(false);
                 }
             }
             await Context.Channel.SendConfirmAsync(str).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        public Task BetRoll(long amount)
+            => InternallBetroll(amount);
+
+        [NadekoCommand, Usage, Description, Aliases]
+        public Task BetRoll(Allin _)
+        {
+            long cur;
+            using (var uow = _db.UnitOfWork)
+            {
+                cur = uow.Currency.GetUserCurrency(Context.User.Id);
+            }
+            return InternallBetroll(cur);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
