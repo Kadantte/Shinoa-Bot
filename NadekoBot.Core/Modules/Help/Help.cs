@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.Help.Services;
 using NadekoBot.Modules.Permissions.Services;
+using NadekoBot.Common;
+using NadekoBot.Common.Replacements;
 
 namespace NadekoBot.Modules.Help
 {
@@ -23,8 +25,23 @@ namespace NadekoBot.Modules.Help
         private readonly CommandService _cmds;
         private readonly GlobalPermissionService _perms;
 
-        public string HelpString => String.Format(_config.BotConfig.HelpString, _creds.ClientId, Prefix);
-        public string DMHelpString => _config.BotConfig.DMHelpString;
+        public EmbedBuilder GetHelpStringEmbed()
+        {
+            var r = new ReplacementBuilder()
+                .WithDefault(Context)
+                .WithOverride("{0}", () => _creds.ClientId.ToString())
+                .WithOverride("{1}", () => Prefix)
+                .Build();
+
+
+            if (!CREmbed.TryParse(_config.BotConfig.HelpString, out var embed))
+                return new EmbedBuilder().WithOkColor()
+                    .WithDescription(String.Format(_config.BotConfig.HelpString, _creds.ClientId, Prefix));
+
+            r.Replace(embed);
+
+            return embed.ToEmbed();
+        }
 
         public Help(IBotCredentials creds, GlobalPermissionService perms, IBotConfigProvider config, CommandService cmds)
         {
@@ -60,7 +77,7 @@ namespace NadekoBot.Modules.Help
                                                   .AsEnumerable();
 
             var cmdsArray = cmds as CommandInfo[] ?? cmds.ToArray();
-            var musicCmds = ".settings       []      .nowplaying     [np]    .play           []\n.playlists      []      .queue          [list]  .remove         [delete] \n.search         []      .scsearch       []      .shuffle        []\n.skip           [voteskip] .forceskip   []      .pause          []\n.skipto         []      .stop           []      .volume         [vol]\n.setdj          []      .settc          []      .setvc          []";
+            var musicCmds = ".config      []      .nowplaying    [np]    .play           [p]\n.export      []      .list          [lq]    .remove         [delete] \n.select      []      .songrepeat    [srp]   .shuffle        []\n.skip        [s]     .gensokyo      []      .pause          []\n.forward     []      .stop          []      .volume         [vol]\n.rewind      []      .history       []      .destroy        [d]\n.seek        []      .split         []      .restart        []\n.join        []      .disconnect    []      .reshuffle      []";
 
             if (!cmdsArray.Any())
             {
@@ -99,67 +116,90 @@ namespace NadekoBot.Modules.Help
             switch (fail)
             {
 
-                case ".settings":
-                    description = "Shows the settings for the current server. This includes Text Channel, Voice Channel, DJ Role, and Default Playlist. This command also shows the number of servers the bot is on, and how many audio connections there currently are.";
+                case ".config":
+                    title = ".config";
+                    description = "Gives you various options like announce the song that's currently playing in the selected channel.";
+                    usage = "`.config topic_channel = music`\n`.config auto_resume = true`";
                     break;
                 case ".nowplaying":
                 case ".np":
-                case ".current":
-                    title = ".nowplaying / .np / .current";
+                    title = ".nowplaying / .np";
                     description = "Shows information about the song that is currently playing (name, user that added it, current timestamp, and song URL)";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
                     break;
                 case ".play":
-                    description = "▫️ With no parameters shows the play commands. If the player is paused, it resumes the player.\n▫️ If name is provided, plays the top YouTube result for the specified song name.\n▫️ If URL is provided, plays the corresponding stream. Supported locations include (but are not limited to): YouTube (and playlists), SoundCloud, BandCamp, Vimeo, and Twitch. Local files or URLs of the following formats are also supported: MP3, FLAC, WAV, Matroska/WebM (AAC, Opus or Vorbis codecs), MP4/M4A (AAC codec), OGG streams (Opus, Vorbis and FLAC codecs), AAC streams, Stream playlists (M3U and PLS)\n▫️ If name of playlist is provided, plays all songs in the specified list. There must already be a playlist of the specified name in the Playlists folder.";
-                    usage = "`.play`\n`.play <song title>`\n`.play <URL>`\n`.play playlist <name>` or `.play pl <name>`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
+                    description = "▫️ With no parameters shows the play commands.\n▫️ If name is provided, plays the top YouTube result for the specified song name.\n▫️ If URL is provided, plays the corresponding stream. Supported locations include (but are not limited to): YouTube (and playlists), SoundCloud, BandCamp, Vimeo, and Twitch. Local files or URLs of the following formats are also supported: MP3, FLAC, WAV, Matroska/WebM (AAC, Opus or Vorbis codecs), MP4 (AAC codec), OGG streams (Opus, Vorbis and FLAC codecs), AAC streams, Stream playlists (M3U and PLS)\n▫️ If name of playlist is provided, plays all songs in the specified list. There must already be a playlist of the specified name in the Playlists folder.";
+                    usage = "`.play`\n`.play <song title>`\n`.play <URL>`\n`.play <hastebin-link>`";
+                    image = "https://thumbs.gfycat.com/RadiantGrandCow-size_restricted.gif";
                     break;
-                case ".playlists":
-                    description = "Shows available playlists. These playlists must be inside the Playlists folder.";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
+                case ".join":
+                    title = ".join";
+                    description = "Makes Ene join your current voice channel.";
+                    usage = "`.join`";
                     break;
-                case ".queue":
+                case ".disconnect":
+                    title = ".join";
+                    description = "Make Ene leave the current voice channel.";
+                    usage = "`.disconnect` `.lv`";
+                    break;
+                case ".srp":
+                case ".songrepeat":
+                    title = ".songrepeat";
+                    description = "Make Ene leave the current voice channel.";
+                    usage = "`.songrepeat all`\n`.srp single`\n`.srp off`";
+                    break;
+                case ".restart":
+                    title = ".restart";
+                    description = "Restart the currently playing track because why not?";
+                    usage = "`.restart`";
+                    break;
+                case ".split":
+                    title = ".split";
+                    description = "Split a YouTube video into a tracklist provided in its description.";
+                    usage = "`.split <url>`";
+                    break;
+                case ".gensokyo":
+                    title = ".gensokyo";
+                    description = "Show the current song played on gensokyoradio.net";
+                    usage = "`.gensokyo`";
+                    break;
+                case ".export":
+                    title = ".export";
+                    description = "Export the current queue to a hastebin link, can be later used as a playlist.";
+                    usage = "`.export`";
+                    image = "https://thumbs.gfycat.com/OptimalUnhappyCats-size_restricted.gif";
+                    break;
+                case ".lq":
                 case ".list":
-                    title = ".queue / .list";
+                    title = ".lq / .list";
                     description = "Shows songs in the queue. If no page number is provided, it defaults to the first page.";
-                    usage = "`.queue [pagenum]` or `.list [pagenum]`";
-                    break;
-                case ".remove":
-                case ".delete":
-                    title = ".remove / .delete";
-                    description = "Removes the song at the provided position in the queue, or all songs if `all` option is used. You can only remove songs that you added, unless you are an Admin or have the specified DJ role.";
-                    usage = "`.remove <songnum>` or `.delete <songnum>`\n`.remove all` or `.delete all`";
-                    break;
-                case ".search":
-                    description = "Shows the top YouTube results for a search and allows you to select one to add to the queue.";
-                    usage = "`.search <query>`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
-                    break;
-                case ".scsearch":
-                    description = "Shows the top SoundCloud results for a search and allows you to select one to add to the queue.";
-                    usage = "`.scsearch <query>`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
+                    usage = "`.lq [pagenum]`\n`.list [pagenum]`";
                     break;
                 case ".shuffle":
                     description = "Shuffles (changes the order, randomly) of songs that you have added to the queue.";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
+                    break;
+                case ".reshuffle":
+                    description = "Reshuffles (changes the order, randomly) of songs that you have added to the queue again.";
                     break;
                 case ".skip":
                 case ".voteskip":
-                    title = ".skip / .voteskip";
+                    title = ".skip";
                     description = "Skips a song if you added it. If you didn't add it, it adds your vote to skip it. Approximately 60% of active listeners need to vote to skip a song for it to be skipped.";
-                    usage = "`.skip` or `.voteskip`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
-                    break;
-                case ".forceskip":
-                    description = "Forcibly skips the current song, regardless of who added it and how many votes there are to skip it.";
+                    usage = "`.skip`\n`.skip @User`";
                     break;
                 case ".pause":
                     description = "Pauses the player. The player remains paused until a DJ or Admin uses the play command.";
                     break;
-                case ".skipto":
+                case ".forward":
                     description = "Skips forward in the queue to the provided song number, playing that song and removing any songs before that from the queue.";
-                    usage = "`.skipto <position>`";
+                    usage = "`.forward 2:30`";
+                    break;
+                case ".rewind":
+                    description = "Rewind the track by a given amount of time.";
+                    usage = "`.rewind 30`";
+                    break;
+                case ".seek":
+                    description = "Set the position of the track to the given time.";
+                    usage = "`.seek 2:45:00`";
                     break;
                 case ".stop":
                     description = "Clears the queue, ends the current song, and leaves the voice channel.";
@@ -167,22 +207,7 @@ namespace NadekoBot.Modules.Help
                 case ".volume":
                 case ".vol":
                     description = "Shows or sets the current volume. For best performance, it is recommended to leave this at 100 and adjust volume on an individual basis within Discord.";
-                    usage = "`.volume [0-150]` or `.vol [0-150]`";
-                    break;
-                case ".setdj":
-                    description = "Sets or clears the DJ role. Users with this role will be able to use DJ commands.";
-                    usage = "`.setdj <rolename>`\n`.setdj none`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
-                    break;
-                case ".settc":
-                    description = "Sets or clears the text channel for music commands. Using music commands in other channels will result in them being deleted (if possible), and a warning sent via DMs to use the correct channel. Additionally, if the bot has the Manage Channel permission in the set channel, it will adjust the topic to show the current track.";
-                    usage = "`.settc <channel>`\n`.settc none`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
-                    break;
-                case ".setvc":
-                    description = "Sets or clears the voice channel for playing music. When set, the bot will only connect to the specified channel when users attempt to play music. When cleared, users can play music from any channel that the bot can connect to (if the bot is not already in a different channel).";
-                    usage = "`.setvc <channel>`\n`.setvc none`";
-                    image = "https://thumbs.gfycat.com/OpenAlertBoaconstrictor-size_restricted.gif";
+                    usage = "`.volume [0-150]`\n`.vol [0-150]`";
                     break;
                 default:
                     isMusic = false;
@@ -230,12 +255,6 @@ namespace NadekoBot.Modules.Help
                         .WithDescription($"" + Context.User.Mention + " Okaay! Check your DMs! 	(＾◡＾)")).ConfigureAwait(false);
                 return;
             }
-
-            //if (com == null)
-            //{
-            //    await ReplyErrorLocalized("command_not_found").ConfigureAwait(false);
-            //    return;
-            //}
 
             var embed = _service.GetCommandHelp(com, Context.Guild);
             await channel.EmbedAsync(embed).ConfigureAwait(false);
