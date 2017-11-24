@@ -77,7 +77,7 @@ namespace NadekoBot.Modules.Help
                                                   .AsEnumerable();
 
             var cmdsArray = cmds as CommandInfo[] ?? cmds.ToArray();
-            var musicCmds = ".config      []      .nowplaying    [np]    .play           [p]\n.export      []      .list          [lq]    .remove         [delete] \n.select      []      .songrepeat    [srp]   .shuffle        []\n.skip        [s]     .gensokyo      []      .pause          []\n.forward     []      .stop          []      .volume         [vol]\n.rewind      []      .history       []      .destroy        [d]\n.seek        []      .split         []      .restart        []\n.join        []      .disconnect    []      .reshuffle      []";
+            var musicCmds = ".config      []      .nowplaying    [np]    .play           [p]\n.export      []      .list          [lq]    .unpause        [resume] \n.select      []      .songrepeat    [srp]   .shuffle        []\n.skip        [s]     .gensokyo      []      .pause          []\n.forward     []      .stop          []      .volume         [vol]\n.rewind      []      .history       []      .destroy        [d]\n.seek        []      .split         []      .restart        []\n.join        []      .disconnect    []      .reshuffle      []\n.mprefix     [smp]";
 
             if (!cmdsArray.Any())
             {
@@ -174,6 +174,12 @@ namespace NadekoBot.Modules.Help
                     description = "Shows songs in the queue. If no page number is provided, it defaults to the first page.";
                     usage = "`.lq [pagenum]`\n`.list [pagenum]`";
                     break;
+                case ".mprefix":
+                case ".smp":
+                    title = ".mprefix / .smp";
+                    description = "Set a Prefix of the Musicmodule for your Server. \n**Note:** If you forgot the prefix, you can do `@Ene mprefix`";
+                    usage = "`.mprefix +`\n`+smp .`";
+                    break;
                 case ".shuffle":
                     description = "Shuffles (changes the order, randomly) of songs that you have added to the queue.";
                     break;
@@ -208,6 +214,11 @@ namespace NadekoBot.Modules.Help
                 case ".vol":
                     description = "Shows or sets the current volume. For best performance, it is recommended to leave this at 100 and adjust volume on an individual basis within Discord.";
                     usage = "`.volume [0-150]`\n`.vol [0-150]`";
+                    break;
+                case ".unpause":
+                case ".resume":
+                    description = "Unpauses the player.";
+                    usage = "`.unpause`\n`.resume`";
                     break;
                 default:
                     isMusic = false;
