@@ -21,7 +21,7 @@ namespace NadekoBot.Core.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "②.⑤.⑥";
+        public const string BotVersion = "②.⑪";
         public string Author => "<@199153694464278529>";
         public string Library => "Discord.Net";
 
@@ -198,7 +198,7 @@ namespace NadekoBot.Core.Services.Impl
         {
             var guilds = _client.Guilds.ToArray();
             _textChannels = guilds.Sum(g => g.Channels.Count(cx => cx is ITextChannel));
-            _voiceChannels = guilds.Sum(g => g.Channels.Count) - _textChannels;
+            _voiceChannels = guilds.Sum(g => g.Channels.Count(cx => cx is IVoiceChannel));
         }
 
         public Task<string> Print()

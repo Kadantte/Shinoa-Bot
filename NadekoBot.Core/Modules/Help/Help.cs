@@ -57,7 +57,7 @@ namespace NadekoBot.Modules.Help
             var embed = new EmbedBuilder().WithOkColor()
                 .WithFooter(efb => efb.WithText("ℹ️" + GetText("modules_footer", Prefix)))
                 .WithTitle(GetText("list_of_modules"))
-                .WithDescription($"▫️ Administration\n▫️ CustomReactions\n▫️ Gambling\n▫️ Games\n▫️ Help\n▫️ Music\n▫️ NSFW\n▫️ Permissions\n▫️ Pokemon\n▫️ Searches\n▫️ Utility\n▫️ Xp\n");
+                .WithDescription($"▫️ Actions\n▫️ Administration\n▫️ CustomReactions\n▫️ Gambling\n▫️ Games\n▫️ Help\n▫️ Music\n▫️ NSFW\n▫️ Permissions\n▫️ Pokemon\n▫️ Searches\n▫️ Utility\n▫️ Xp\n");
             await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
 
@@ -74,33 +74,70 @@ namespace NadekoBot.Modules.Help
                                                 .Where(c => !_perms.BlockedCommands.Contains(c.Aliases.First().ToLowerInvariant()))
                                                   .OrderBy(c => c.Aliases.First())
                                                   .Distinct(new CommandTextEqualityComparer())
-                                                  .AsEnumerable();
-
-            var cmdsArray = cmds as CommandInfo[] ?? cmds.ToArray();
-            var musicCmds = ".config      []      .nowplaying    [np]    .play           [p]\n.export      []      .list          [lq]    .unpause        [resume] \n.select      []      .songrepeat    [srp]   .shuffle        []\n.skip        [s]     .gensokyo      []      .pause          []\n.forward     []      .stop          []      .volume         [vol]\n.rewind      []      .history       []      .destroy        [d]\n.seek        []      .split         []      .restart        []\n.join        []      .disconnect    []      .reshuffle      []\n.mprefix     [smp]";
-
-            if (!cmdsArray.Any())
+                                                  .GroupBy(c => c.Module.Name.Replace("Commands", ""));
+            cmds = cmds.OrderBy(x => x.Key == x.First().Module.Name ? int.MaxValue : x.Count());
+            if (!cmds.Any())
             {
 	            switch (moduleName)
 	            {
 	                case "Music":
 	                case "music":
-	                    await channel.SendMessageAsync($"📃 **{GetText("list_of_commands")}**\n```css\n{musicCmds}\n```").ConfigureAwait(false);
+	            await Context.Channel.EmbedAsync(
+                new EmbedBuilder().WithOkColor()
+                    .WithAuthor(eab => eab.WithName("Music"))
+                    .AddField(efb => efb.WithName("Player").WithValue("```css\n.play      [p]\n.export    []\n.skip      [s]\n.stop      []\n.pause     []\n.unpause   []\n.resume    []\n.forward   []\n.rewind    []\n.seek      []\n.split     []\n.join      []\n.disconnect[]\n.destroy   [d]\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Controlls").WithValue("```css\n.select    []\n.nowplaying[np]\n.list      [lq]\n.songrepeat[srp]\n.shuffle   []\n.reshuffle []\n.volume    [vol]\n.restart   []\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Other").WithValue("```css\n.gensokyo  []\n.history   []\n.config    []\n.mprefix   [smp]\n```").WithIsInline(true)));
+	                    break;
+                    case "actions":
+	                case "Actions":
+	            await Context.Channel.EmbedAsync(
+                new EmbedBuilder().WithOkColor()
+                    .WithAuthor(eab => eab.WithName("Actions"))
+                    .AddField(efb => efb.WithName("Good Actions").WithValue("```css\n.pat         []\n.hug         []\n.kiss        []\n.poke        []\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Bad Actions").WithValue("```css\n.slap        []\n.kick        []\n.stab        []\n.shoot       []\n.bite        []\n```").WithIsInline(true)));
 	                    break;
 	                default:
 		                await ReplyErrorLocalized("module_not_found").ConfigureAwait(false);
 		                return;
-	            }
+                }
             }
-            var j = 0;
-            var groups = cmdsArray.GroupBy(x => j++ / 48).ToArray();
-
-            for (int i = 0; i < groups.Count(); i++)
+            var i = 0;
+            var groups = cmds.GroupBy(x => i++ / 48).ToArray();
+            var embed = new EmbedBuilder().WithOkColor();
+            foreach (var g in groups)
             {
-                await channel.SendTableAsync(i == 0 ? $"📃 **{GetText("list_of_commands")}**\n" : "", groups.ElementAt(i), el => $"{Prefix + el.Aliases.First(),-15} {"[" + el.Aliases.Skip(1).FirstOrDefault() + "]",-8}").ConfigureAwait(false);
-            }
+                var last = g.Count();
+                for (i = 0; i < last; i++)
+                {
+                    var transformed = g.ElementAt(i).Select(x =>
+                    {
+                        return $"{Prefix + x.Aliases.First(),-15} {"[" + x.Aliases.Skip(1).FirstOrDefault() + "]",-8}";
+                        var str = $"{Prefix + x.Aliases.First(),-18}";
+                        var al = x.Aliases.Skip(1).FirstOrDefault();
+                        if (al != null)
+                            str += $" {"(" + Prefix + al + ")", -9}";
+                        return str;
+                    });
 
-            await ConfirmLocalized("commands_instr", Prefix).ConfigureAwait(false);
+                    if (i == last - 1 && (i + 1) % 2 != 0)
+                    {
+                        var grp = 0;
+                        var count = transformed.Count();
+                        transformed = transformed
+                            .GroupBy(x => grp++ % count / 2)
+                            .Select(x => {
+                                if (x.Count() == 1)
+                                    return $"{x.First()}";
+                                else
+                                    return String.Concat(x);
+                            });                        
+                    }
+                    embed.AddField(g.ElementAt(i).Key, "```css\n" + string.Join("\n", transformed) + "\n```", true);
+                }
+            }
+            embed.WithFooter(GetText("commands_instr", Prefix));
+            await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -108,6 +145,7 @@ namespace NadekoBot.Modules.Help
         public async Task H([Remainder] string fail)
         {
             var isMusic = true;
+            var isAction = true;
             var title = fail;
             var description = "";
             var usage = $"`{title}`";
@@ -220,25 +258,50 @@ namespace NadekoBot.Modules.Help
                     description = "Unpauses the player.";
                     usage = "`.unpause`\n`.resume`";
                     break;
+                case ".hug":
+                    title = ".hug";
+                    description = "Hug someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.hug @Someone`";
+                    isAction = true;
+                    break;
+                case ".kiss":
+                    title = ".kiss";
+                    description = "Kiss someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.kiss @Someone`";
+                    isAction = true;
+                    break;
+                case ".pat":
+                    title = ".pat";
+                    description = "Pat someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.pat @Someone`";
+                    isAction = true;
+                    break;
                 default:
                     isMusic = false;
                     break;
             }
 
-            switch (isMusic)
+            if (isAction == false && isMusic == true)
             {
-                case true:
-                    await Context.Channel.EmbedAsync(
-                        new EmbedBuilder().WithOkColor()
-                            .WithTitle(title)
-                            .WithDescription(description)
-                            .AddField(efb => efb.WithName($"Usage").WithValue(usage))
-                            .WithImageUrl($"{image}")
-                            .WithFooter($"Module: Music")).ConfigureAwait(false);
-                    break;
-                case false:
-                    await ReplyErrorLocalized("command_not_found").ConfigureAwait(false);
-                    break;
+                await Context.Channel.EmbedAsync(
+                    new EmbedBuilder().WithOkColor()
+                        .WithTitle(title)
+                        .WithDescription(description)
+                        .AddField(efb => efb.WithName($"Usage").WithValue(usage))
+                        .WithImageUrl($"{image}")
+                        .WithFooter($"Module: Music")).ConfigureAwait(false);
+            } else if (isAction == true)
+            {
+                await Context.Channel.EmbedAsync(
+                    new EmbedBuilder().WithOkColor()
+                        .WithTitle(title)
+                        .WithDescription(description)
+                        .AddField(efb => efb.WithName($"Usage").WithValue(usage))
+                        .WithImageUrl($"{image}")
+                        .WithFooter($"Module: Actions")).ConfigureAwait(false);
+            } else
+            {
+                await ReplyErrorLocalized("command_not_found").ConfigureAwait(false);
             }
         }
 

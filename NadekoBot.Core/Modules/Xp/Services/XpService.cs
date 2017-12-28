@@ -599,9 +599,8 @@ namespace NadekoBot.Modules.Xp.Services
 
         public Task<MemoryStream> GenerateImageAsync(FullUserStats stats) => Task.Run(async () =>
         {
-            using (var img = Image.Load(_images.XpCard.ToArray()))
+            using (var img = Image.Load(_images.XpCard))
             {
-
                 var username = stats.User.ToString();
                 var usernameFont = _fonts.UsernameFontFamily
                     .CreateFont(username.Length <= 6

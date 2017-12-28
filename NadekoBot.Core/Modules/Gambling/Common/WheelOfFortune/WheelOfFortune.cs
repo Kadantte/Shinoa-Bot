@@ -29,7 +29,7 @@ namespace NadekoBot.Modules.Gambling.Common.WheelOfFortune
             0f,
             0.2f,
             0.5f,
-            3f,
+            2.5f,
             2f,
 
         }.ToImmutableArray();
