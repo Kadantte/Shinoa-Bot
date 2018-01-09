@@ -1,12 +1,14 @@
-![img](https://ci.appveyor.com/api/projects/status/gmu6b3ltc80hr3k9?svg=true)
-[![Discord](https://discordapp.com/api/guilds/117523346618318850/widget.png)](https://discord.gg/nadekobot)
-[![Documentation Status](https://readthedocs.org/projects/nadekobot/badge/?version=latest)](http://nadekobot.readthedocs.io/en/latest/?badge=latest)
-[![nadeko0](https://cdn.discordapp.com/attachments/266240393639755778/281920716809699328/part1.png)](https://nadekobot.me)
-[![nadeko1](https://cdn.discordapp.com/attachments/266240393639755778/281920134967328768/part2.png)](https://discordapp.com/oauth2/authorize?client_id=170254782546575360&scope=bot&permissions=66186303)
-[![nadeko2](https://cdn.discordapp.com/attachments/266240393639755778/281920161311883264/part3.png)](http://nadekobot.readthedocs.io/en/latest/Commands%20List/)
+Hello there!  
+This is the Ene-Bot. She's basically a clone of the NadekoBot.   
+But Ene has a changed Source and a custom Music Module! :o  
 
-## For Updates, Help and Guidelines
+[![Discord](https://discordapp.com/api/guilds/284977269892448268/widget.png)](https://discord.gg/8kBW525)
+[![Ene0](http://i.imgur.com/mi5GQ9p.png)](https://discord.gg/8kBW525)
+[![Ene1](http://i.imgur.com/Yutcsal.png)](http://bit.ly/InvEne)
+[![Ene2](http://i.imgur.com/HmjZ8mg.png)](https://discord.gg/8kBW525)
 
-| [![twitter](https://cdn.discordapp.com/attachments/155726317222887425/252192520094613504/twiter_banner.JPG)](https://twitter.com/TheNadekoBot) | [![discord](https://cdn.discordapp.com/attachments/266240393639755778/281920766490968064/discord.png)](https://discord.gg/nadekobot) | [![Wiki](https://cdn.discordapp.com/attachments/266240393639755778/281920793330581506/datcord.png)](http://nadekobot.readthedocs.io/en/latest/)
-| --- | --- | --- |
-| **Follow me on Twitter.** | **Join my Discord server for help.** | **Read the Docs for self-hosting.** |
+## For Help, Guides and Commands:
+
+| [![discord](http://i.imgur.com/Cz1RWW6.png)](https://discord.gg/8kBW525) | [![Wiki](http://i.imgur.com/e8eaWS3.png)](http://enecmdlist.readthedocs.io/en/latest/) |
+| --- | --- |
+| **Join my Discord server for help.** | **Read the Docs for self-hosting.** |
