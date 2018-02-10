@@ -13,6 +13,7 @@ using NadekoBot.Modules.Help.Services;
 using NadekoBot.Modules.Permissions.Services;
 using NadekoBot.Common;
 using NadekoBot.Common.Replacements;
+using Newtonsoft.Json;
 
 namespace NadekoBot.Modules.Help
 {
@@ -21,7 +22,6 @@ namespace NadekoBot.Modules.Help
         public const string PatreonUrl = "https://patreon.com/nadekobot";
         public const string PaypalUrl = "https://paypal.me/Kwoth";
         private readonly IBotCredentials _creds;
-        private readonly IBotConfigProvider _config;
         private readonly CommandService _cmds;
         private readonly GlobalPermissionService _perms;
 
@@ -34,19 +34,18 @@ namespace NadekoBot.Modules.Help
                 .Build();
 
 
-            if (!CREmbed.TryParse(_config.BotConfig.HelpString, out var embed))
+            if (!CREmbed.TryParse(_bc.BotConfig.HelpString, out var embed))
                 return new EmbedBuilder().WithOkColor()
-                    .WithDescription(String.Format(_config.BotConfig.HelpString, _creds.ClientId, Prefix));
+                    .WithDescription(String.Format(_bc.BotConfig.HelpString, _creds.ClientId, Prefix));
 
             r.Replace(embed);
 
             return embed.ToEmbed();
         }
 
-        public Help(IBotCredentials creds, GlobalPermissionService perms, IBotConfigProvider config, CommandService cmds)
+        public Help(IBotCredentials creds, GlobalPermissionService perms, CommandService cmds)
         {
             _creds = creds;
-            _config = config;
             _cmds = cmds;
             _perms = perms;
         }
@@ -85,7 +84,7 @@ namespace NadekoBot.Modules.Help
 	            await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName("Music"))
-                    .AddField(efb => efb.WithName("Player").WithValue("```css\n.play      [p]\n.export    []\n.skip      [s]\n.stop      []\n.pause     []\n.unpause   []\n.resume    []\n.forward   []\n.rewind    []\n.seek      []\n.split     []\n.join      []\n.disconnect[]\n.destroy   [d]\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Player").WithValue("```css\n.play      [p]\n.export    []\n.skip      [n]\n.stop      [s]\n.pause     []\n.unpause   []\n.resume    []\n.forward   []\n.rewind    []\n.seek      []\n.split     []\n.join      []\n.disconnect[]\n.destroy   [d]\n```").WithIsInline(true))
                     .AddField(efb => efb.WithName("Controlls").WithValue("```css\n.select    []\n.nowplaying[np]\n.list      [lq]\n.songrepeat[srp]\n.shuffle   []\n.reshuffle []\n.volume    [vol]\n.restart   []\n```").WithIsInline(true))
                     .AddField(efb => efb.WithName("Other").WithValue("```css\n.gensokyo  []\n.history   []\n.config    []\n.mprefix   [smp]\n```").WithIsInline(true)));
 	                    break;
@@ -179,6 +178,10 @@ namespace NadekoBot.Modules.Help
                     description = "Make Ene leave the current voice channel.";
                     usage = "`.disconnect` `.lv`";
                     break;
+                case ".s":
+                case ".stop":
+                    description = "Clears the queue, ends the current song, and stops the player.";
+                    break;
                 case ".srp":
                 case ".songrepeat":
                     title = ".songrepeat";
@@ -225,7 +228,7 @@ namespace NadekoBot.Modules.Help
                     description = "Reshuffles (changes the order, randomly) of songs that you have added to the queue again.";
                     break;
                 case ".skip":
-                case ".voteskip":
+                case ".n":
                     title = ".skip";
                     description = "Skips a song if you added it. If you didn't add it, it adds your vote to skip it. Approximately 60% of active listeners need to vote to skip a song for it to be skipped.";
                     usage = "`.skip`\n`.skip @User`";
@@ -245,7 +248,8 @@ namespace NadekoBot.Modules.Help
                     description = "Set the position of the track to the given time.";
                     usage = "`.seek 2:45:00`";
                     break;
-                case ".stop":
+                case ".d":
+                case ".destroy":
                     description = "Clears the queue, ends the current song, and leaves the voice channel.";
                     break;
                 case ".volume":
@@ -278,6 +282,7 @@ namespace NadekoBot.Modules.Help
                     break;
                 default:
                     isMusic = false;
+                    isAction = false;
                     break;
             }
 
@@ -309,24 +314,18 @@ namespace NadekoBot.Modules.Help
         [Priority(1)]
         public async Task H([Remainder] CommandInfo com = null)
         {
-
             var channel = Context.Channel;
             await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
 
             if (com == null)
             {
-                IMessageChannel ch = channel is ITextChannel ? await ((IGuildUser)Context.User).GetOrCreateDMChannelAsync() : channel;
-                await ch.EmbedAsync(
-                    new EmbedBuilder().WithOkColor()
-                        .WithTitle($"What can I help you with? :)")
-                        .WithDescription($"Heeey. My name is Ene. I am Gremagol-sama's Bot. Also, a custom bot that offers a wide variety of features and high quality music. I'd be happy to help you improve your server!")
-                        .AddField(efb => efb.WithName($"💌Invite Links💌").WithValue($"🔗 [**CLICK HERE TO INVITE ME**](http://www.gremagol.com/inv-ene)\n🔗 [**JOIN MY SERVER IF YOU STILL NEED HELP**](https://gremagol.com/discord)").WithIsInline(false))
-                        .AddField(efb => efb.WithName($"⚙️Features🎶").WithValue($"✅ Moderation\n✅ Games and gambling\n✅ Xp and leveling\n✅ Multiple utility commands\n✅ And more!\n\n**Extra:**\n\n🎶 High quality music\n💰 Currency generation (`.gc`)\n⚙️ Logs\n🆒 Many funny custom reactions preloaded\n(type  `.cmds custom` in your server to see a list, type `.lcr` here for full list)").WithIsInline(false))
-                        .AddField(efb => efb.WithName($"Commands").WithValue($"▫️ [A list of all commands](http://www.gremagol.com/ene-commandlist)\n\n▶️ Type `.modules` to get the list of modules.\n▶️ Type `.cmds <module>` to get the list of a module's\n▶️commands.\n▶️ Type `.h <command>` to get help for a specific command.").WithIsInline(false))
-                        .WithImageUrl("https://i.imgur.com/UPAvj1i.png")).ConfigureAwait(false);
-                    await Context.Channel.EmbedAsync(
-                    new EmbedBuilder().WithOkColor()
-                        .WithDescription($"" + Context.User.Mention + " Okaay! Check your DMs! 	(＾◡＾)")).ConfigureAwait(false);
+                IMessageChannel ch = channel is ITextChannel 
+                    ? await ((IGuildUser)Context.User).GetOrCreateDMChannelAsync() 
+                    : channel;
+                await ch.EmbedAsync(GetHelpStringEmbed()).ConfigureAwait(false);
+                await Context.Channel.EmbedAsync(
+                new EmbedBuilder().WithOkColor()
+                    .WithDescription($"" + Context.User.Mention + " Okaay! Check your DMs! 	(＾◡＾)")).ConfigureAwait(false);
                 return;
             }
 
@@ -339,38 +338,27 @@ namespace NadekoBot.Modules.Help
         [OwnerOnly]
         public async Task Hgit()
         {
-            var helpstr = new StringBuilder();
-            helpstr.AppendLine(GetText("cmdlist_donate", PatreonUrl, PaypalUrl) + "\n");
-            helpstr.AppendLine("##"+ GetText("table_of_contents"));
-            helpstr.AppendLine(string.Join("\n", _cmds.Modules.Where(m => m.GetTopLevelModule().Name.ToLowerInvariant() != "help")
-                .Select(m => m.GetTopLevelModule().Name)
-                .Distinct()
-                .OrderBy(m => m)
-                .Prepend("Help")
-                .Select(m => string.Format("- [{0}](#{1})", m, m.ToLowerInvariant()))));
-            helpstr.AppendLine();
-            string lastModule = null;
+            Dictionary<string, List<object>> cmdData = new Dictionary<string, List<object>>();
             foreach (var com in _cmds.Commands.OrderBy(com => com.Module.GetTopLevelModule().Name).GroupBy(c => c.Aliases.First()).Select(g => g.First()))
             {
                 var module = com.Module.GetTopLevelModule();
-                if (module.Name != lastModule)
+                var obj = new
                 {
-                    if (lastModule != null)
+                    Aliases = com.Aliases.Select(x => Prefix + x).ToArray(),
+                    Description = string.Format(com.Summary, Prefix) + _service.GetCommandRequirements(com, Context.Guild),
+                    Usage = JsonConvert.DeserializeObject<string[]>(com.Remarks).Select(x => string.Format(x, Prefix)).ToArray(),
+                    Submodule = com.Module.Name,
+                    Module = com.Module.GetTopLevelModule().Name,
+                };
+                if (cmdData.TryGetValue(module.Name, out var cmds))
+                    cmds.Add(obj);
+                else
+                    cmdData.Add(module.Name, new List<object>
                     {
-                        helpstr.AppendLine();
-                        helpstr.AppendLine($"###### [{GetText("back_to_toc")}](#{GetText("table_of_contents").ToLowerInvariant().Replace(' ', '-')})");
-                    }
-                    helpstr.AppendLine();
-                    helpstr.AppendLine("### " + module.Name + "  ");
-                    helpstr.AppendLine($"{GetText("cmd_and_alias")} | {GetText("desc")} | {GetText("usage")}");
-                    helpstr.AppendLine("----------------|--------------|-------");
-                    lastModule = module.Name;
-                }
-                helpstr.AppendLine($"{string.Join(" ", com.Aliases.Select(a => "`" + Prefix + a + "`"))} |" +
-                                   $" {string.Format(com.Summary, Prefix)} {_service.GetCommandRequirements(com, Context.Guild)} |" +
-                                   $" {string.Format(com.Remarks, Prefix)}");
+                        obj
+                    });
             }
-            File.WriteAllText("../../docs/Commands List.md", helpstr.ToString());
+            File.WriteAllText("../../docs/cmds.json", JsonConvert.SerializeObject(cmdData));
             await ReplyConfirmLocalized("commandlist_regen").ConfigureAwait(false);
         }
 
@@ -378,7 +366,7 @@ namespace NadekoBot.Modules.Help
         public async Task Guide()
         {
             await ConfirmLocalized("guide", 
-                "http://nadekobot.readthedocs.io/en/latest/Commands%20List/",
+                "https://nadekobot.me/commands",
                 "http://nadekobot.readthedocs.io/en/latest/").ConfigureAwait(false);
         }
         
@@ -397,6 +385,11 @@ namespace NadekoBot.Modules.Help
                         .AddField(efb => efb.WithName($"💌Invite me💌").WithValue($"⏩ [Click Here](http://www.gremagol.com/inv-ene) ⏪").WithIsInline(true))
                         .AddField(efb => efb.WithName($"💟Join my Server💟").WithValue($"⏩ [Click Here](https://gremagol.com/discord) ⏪").WithIsInline(true))).ConfigureAwait(false);
         }
+
+        private string GetRemarks(string[] arr)
+        {
+            return string.Join(" or ", arr.Select(x => Format.Code(x)));
+        }
     }
 
     public class CommandTextEqualityComparer : IEqualityComparer<CommandInfo>
@@ -405,5 +398,12 @@ namespace NadekoBot.Modules.Help
 
         public int GetHashCode(CommandInfo obj) => obj.Aliases.First().GetHashCode();
 
+    }
+    
+    public class JsonCommandData
+    {
+        public string[] Aliases { get; set; }
+        public string Description { get; set; }
+        public string Usage { get; set; }
     }
 }

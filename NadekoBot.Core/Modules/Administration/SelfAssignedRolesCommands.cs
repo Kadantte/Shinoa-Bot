@@ -132,15 +132,31 @@ namespace NadekoBot.Modules.Administration
                     exclusive = uow.GuildConfigs.For(Context.Guild.Id, set => set)
                         .ExclusiveSelfAssignedRoles;
                     var roleModels = uow.SelfAssignedRoles.GetFromGuild(Context.Guild.Id)
-                        .Skip(page * 20)
-                        .Take(20)
-                        .ToDictionary(x => x.Key, x => x.AsEnumerable().ToArray())
                         .OrderBy(x => x.Key);
+
+                    var skip = page * 20;
                     foreach (var kvp in roleModels)
                     {
-                        rolesStr.AppendLine("\t\t\t\t『" + Format.Bold(GetText("self_assign_group", kvp.Key)) + "』");
-                        foreach (var roleModel in kvp.Value)
+                        var cnt = kvp.Count();
+                        if (skip >= cnt)
                         {
+                            skip -= cnt;
+                            continue;
+                        }
+                        if (skip < -20)
+                            break;
+                        rolesStr.AppendLine("\t\t\t\t『" + Format.Bold(GetText("self_assign_group", kvp.Key)) + "』");
+                        foreach (var roleModel in kvp.AsEnumerable())
+                        {
+                            if(skip-- > 0)
+                            {
+                                continue;
+                            }
+                            if (skip < -20)
+                            {
+                                break;
+                            }
+
                             var role = Context.Guild.Roles.FirstOrDefault(r => r.Id == roleModel.RoleId);
                             if (role == null)
                             {
@@ -204,7 +220,6 @@ namespace NadekoBot.Modules.Administration
                 bool notExists = false;
                 using (var uow = _db.UnitOfWork)
                 {
-                    //todo add firacode font to visual studio
                     var roles = uow.SelfAssignedRoles.GetFromGuild(Context.Guild.Id);
                     var sar = roles.SelectMany(x => x).FirstOrDefault(x => x.RoleId == role.Id);
                     if (sar != null)

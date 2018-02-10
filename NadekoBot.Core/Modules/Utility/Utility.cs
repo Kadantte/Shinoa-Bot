@@ -134,6 +134,14 @@ namespace NadekoBot.Modules.Utility
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        public async Task RoleId([Remainder] IRole role)
+        {
+            await ReplyConfirmLocalized("roleid", "🆔", Format.Bold(role.ToString()),
+                Format.Code(role.Id.ToString())).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task ChannelId()
         {
             await ReplyConfirmLocalized("channelid", "🆔", Format.Code(Context.Channel.Id.ToString()))
@@ -241,8 +249,10 @@ namespace NadekoBot.Modules.Utility
                     .AddField(efb => efb.WithName($"Latency").WithValue($"📡 **{(int)sw.Elapsed.TotalMilliseconds}** ms").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Documentation").WithValue($"🛠️ type `.help`").WithIsInline(true))	
                     .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://gremagol.com/inv-ene)** \n❤️ My Cave: **[Click Here](https://gremagol.com/discord)**").WithIsInline(true))							
+                    .AddField(efb => efb.WithName($"Thanks to").WithValue($"**Kwoth#2560**\nfor creating the \n[NadekoBot](https://github.com/Kwoth/NadekoBot) and\nthe [Embed Builder](https://github.com/Kwoth/embed-visualizer)\n\n**Fre_d#0310**\nfor creating\n[FredBoat](https://github.com/Frederikam/FredBoat)").WithIsInline(true))	
+                    .AddField(efb => efb.WithName($"Much love to").WithValue($"Kwoth#2560\nFre_d#0310\nSkarrior#8888\nMacley-Kun#9105\nMΔИՄΣL#0281\nOri#9159").WithIsInline(true))
                     .WithImageUrl("https://i.imgur.com/UDHaUMM.gif")
-					.WithFooter(efb => efb.WithText($"Give Gremagol some love. OwO")));
+					.WithFooter(efb => efb.WithText($"Without you guys, Ene wouldn't be like this nowadays! 💙")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]
