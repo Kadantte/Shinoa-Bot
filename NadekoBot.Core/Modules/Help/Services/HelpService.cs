@@ -75,7 +75,7 @@ namespace NadekoBot.Modules.Help.Services
             return em;
         }
 
-        private string GetCommandOptionHelp(Type opt)
+        public string GetCommandOptionHelp(Type opt)
         {
             var strs = opt.GetProperties()
                 .Select(x => x.GetCustomAttributes(true).FirstOrDefault(a => a is OptionAttribute))
@@ -111,6 +111,7 @@ namespace NadekoBot.Modules.Help.Services
                   }));
 
         private string GetText(string text, IGuild guild, params object[] replacements) =>
+
             _strings.GetText(text, guild?.Id, "Help".ToLowerInvariant(), replacements);
     }
 }

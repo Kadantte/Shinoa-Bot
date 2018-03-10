@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using NadekoBot.Common.Attributes;
+using NadekoBot.Core.Common;
 using NadekoBot.Core.Modules.Gambling.Common;
 using NadekoBot.Core.Modules.Gambling.Common.Blackjack;
 using NadekoBot.Core.Modules.Gambling.Services;
@@ -34,20 +35,7 @@ namespace NadekoBot.Modules.Gambling
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            public Task BlackJack(Allin _)
-            {
-                long cur;
-                using (var uow = _db.UnitOfWork)
-                {
-                    cur = uow.DiscordUsers.GetOrCreate(Context.User).CurrencyAmount;
-                }
-
-                return BlackJack(cur);
-            }
-
-            [NadekoCommand, Usage, Description, Aliases]
-            [RequireContext(ContextType.Guild)]
-            public async Task BlackJack(long amount)
+            public async Task BlackJack(ShmartNumber amount)
             {
                 if (!await CheckBetMandatory(amount))
                     return;
@@ -70,7 +58,7 @@ namespace NadekoBot.Modules.Gambling
                 }
                 else
                 {
-                    if(await bj.Join(Context.User, amount))
+                    if (await bj.Join(Context.User, amount))
                         await ReplyConfirmLocalized("bj_joined").ConfigureAwait(false);
                     else
                     {
@@ -178,7 +166,7 @@ namespace NadekoBot.Modules.Gambling
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             public Task Double() => InternalBlackJack(BjAction.Double);
-            
+
             public async Task InternalBlackJack(BjAction a)
             {
                 if (!_service.Games.TryGetValue(Context.Channel.Id, out var bj))
@@ -190,7 +178,7 @@ namespace NadekoBot.Modules.Gambling
                     await bj.Stand(Context.User);
                 else if (a == BjAction.Double)
                 {
-                    if(!await bj.Double(Context.User))
+                    if (!await bj.Double(Context.User))
                     {
                         await ReplyErrorLocalized("not_enough").ConfigureAwait(false);
                     }

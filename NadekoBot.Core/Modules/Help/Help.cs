@@ -94,7 +94,7 @@ namespace NadekoBot.Modules.Help
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName("Actions"))
                     .AddField(efb => efb.WithName("Good Actions").WithValue("```css\n.pat         []\n.hug         []\n.kiss        []\n.poke        []\n```").WithIsInline(true))
-                    .AddField(efb => efb.WithName("Bad Actions").WithValue("```css\n.slap        []\n.kick        []\n.stab        []\n.shoot       []\n.bite        []\n```").WithIsInline(true)));
+                    .AddField(efb => efb.WithName("Bad Actions").WithValue("```css\n .slap        []\ne.kick        []\n .stab        []\n .shoot       []\n .bite        []\n```").WithIsInline(true)));
 	                    break;
 	                default:
 		                await ReplyErrorLocalized("module_not_found").ConfigureAwait(false);
@@ -149,6 +149,13 @@ namespace NadekoBot.Modules.Help
             var description = "";
             var usage = $"`{title}`";
             var image = "";
+            var footer = "";
+            var prefixless = _cmds.Commands.FirstOrDefault(x => x.Name.ToLowerInvariant() == fail);
+            if(prefixless!= null)
+            {
+                await H(prefixless);
+                return;
+            }
 
             switch (fail)
             {
@@ -157,127 +164,218 @@ namespace NadekoBot.Modules.Help
                     title = ".config";
                     description = "Gives you various options like announce the song that's currently playing in the selected channel.";
                     usage = "`.config topic_channel = music`\n`.config auto_resume = true`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".nowplaying":
                 case ".np":
                     title = ".nowplaying / .np";
                     description = "Shows information about the song that is currently playing (name, user that added it, current timestamp, and song URL)";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".play":
                     description = "▫️ With no parameters shows the play commands.\n▫️ If name is provided, plays the top YouTube result for the specified song name.\n▫️ If URL is provided, plays the corresponding stream. Supported locations include (but are not limited to): YouTube (and playlists), SoundCloud, BandCamp, Vimeo, and Twitch. Local files or URLs of the following formats are also supported: MP3, FLAC, WAV, Matroska/WebM (AAC, Opus or Vorbis codecs), MP4 (AAC codec), OGG streams (Opus, Vorbis and FLAC codecs), AAC streams, Stream playlists (M3U and PLS)\n▫️ If name of playlist is provided, plays all songs in the specified list. There must already be a playlist of the specified name in the Playlists folder.";
                     usage = "`.play`\n`.play <song title>`\n`.play <URL>`\n`.play <hastebin-link>`";
                     image = "https://thumbs.gfycat.com/RadiantGrandCow-size_restricted.gif";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".join":
                     title = ".join";
                     description = "Makes Ene join your current voice channel.";
                     usage = "`.join`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".disconnect":
-                    title = ".join";
+                    title = ".disconnect";
                     description = "Make Ene leave the current voice channel.";
                     usage = "`.disconnect` `.lv`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".s":
                 case ".stop":
                     description = "Clears the queue, ends the current song, and stops the player.";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".srp":
                 case ".songrepeat":
                     title = ".songrepeat";
                     description = "Make Ene leave the current voice channel.";
                     usage = "`.songrepeat all`\n`.srp single`\n`.srp off`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".restart":
                     title = ".restart";
                     description = "Restart the currently playing track because why not?";
                     usage = "`.restart`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".split":
                     title = ".split";
                     description = "Split a YouTube video into a tracklist provided in its description.";
                     usage = "`.split <url>`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".gensokyo":
                     title = ".gensokyo";
                     description = "Show the current song played on gensokyoradio.net";
                     usage = "`.gensokyo`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".export":
                     title = ".export";
                     description = "Export the current queue to a hastebin link, can be later used as a playlist.";
                     usage = "`.export`";
                     image = "https://thumbs.gfycat.com/OptimalUnhappyCats-size_restricted.gif";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".lq":
                 case ".list":
                     title = ".lq / .list";
                     description = "Shows songs in the queue. If no page number is provided, it defaults to the first page.";
                     usage = "`.lq [pagenum]`\n`.list [pagenum]`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".mprefix":
                 case ".smp":
                     title = ".mprefix / .smp";
                     description = "Set a Prefix of the Musicmodule for your Server. \n**Note:** If you forgot the prefix, you can do `@Ene mprefix`";
                     usage = "`.mprefix +`\n`+smp .`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".shuffle":
                     description = "Shuffles (changes the order, randomly) of songs that you have added to the queue.";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".reshuffle":
                     description = "Reshuffles (changes the order, randomly) of songs that you have added to the queue again.";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".skip":
                 case ".n":
                     title = ".skip";
                     description = "Skips a song if you added it. If you didn't add it, it adds your vote to skip it. Approximately 60% of active listeners need to vote to skip a song for it to be skipped.";
                     usage = "`.skip`\n`.skip @User`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".pause":
                     description = "Pauses the player. The player remains paused until a DJ or Admin uses the play command.";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".forward":
                     description = "Skips forward in the queue to the provided song number, playing that song and removing any songs before that from the queue.";
                     usage = "`.forward 2:30`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".rewind":
                     description = "Rewind the track by a given amount of time.";
                     usage = "`.rewind 30`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".seek":
                     description = "Set the position of the track to the given time.";
                     usage = "`.seek 2:45:00`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".d":
                 case ".destroy":
                     description = "Clears the queue, ends the current song, and leaves the voice channel.";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".volume":
                 case ".vol":
                     description = "Shows or sets the current volume. For best performance, it is recommended to leave this at 100 and adjust volume on an individual basis within Discord.";
                     usage = "`.volume [0-150]`\n`.vol [0-150]`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".unpause":
                 case ".resume":
                     description = "Unpauses the player.";
                     usage = "`.unpause`\n`.resume`";
+                    footer = "Module: Music";
+                    isMusic = true;
                     break;
                 case ".hug":
                     title = ".hug";
                     description = "Hug someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.hug @Someone`";
+                    footer = "Module: Actions";
                     isAction = true;
                     break;
                 case ".kiss":
                     title = ".kiss";
                     description = "Kiss someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.kiss @Someone`";
+                    footer = "Module: Actions";
                     isAction = true;
                     break;
                 case ".pat":
                     title = ".pat";
                     description = "Pat someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.pat @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".poke":
+                    title = ".poke";
+                    description = "Poke someone, if you need their attention. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.poke @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".bite":
+                    title = ".bite";
+                    description = "Bite someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.bite @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".slap":
+                    title = ".slap";
+                    description = "Slap someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.slap @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".stab":
+                    title = ".stab";
+                    description = "Stab someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.stab @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".shoot":
+                    title = ".shoot";
+                    description = "Shoot someone. But don't worry, it won't hurt. :) Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.shoot @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case "e.kick":
+                    title = "e.kick";
+                    description = "Kick someone. They won't be kicked from the server. :D Remember: If you change the prefix, it'll be still `e.` as prefix.";
+                    usage = "`e.kick @Someone`";
+                    footer = "Module: Actions";
                     isAction = true;
                     break;
                 default:
@@ -294,7 +392,7 @@ namespace NadekoBot.Modules.Help
                         .WithDescription(description)
                         .AddField(efb => efb.WithName($"Usage").WithValue(usage))
                         .WithImageUrl($"{image}")
-                        .WithFooter($"Module: Music")).ConfigureAwait(false);
+                        .WithFooter($"{footer}")).ConfigureAwait(false);
             } else if (isAction == true)
             {
                 await Context.Channel.EmbedAsync(
@@ -303,7 +401,7 @@ namespace NadekoBot.Modules.Help
                         .WithDescription(description)
                         .AddField(efb => efb.WithName($"Usage").WithValue(usage))
                         .WithImageUrl($"{image}")
-                        .WithFooter($"Module: Actions")).ConfigureAwait(false);
+                        .WithFooter($"{footer}")).ConfigureAwait(false);
             } else
             {
                 await ReplyErrorLocalized("command_not_found").ConfigureAwait(false);
@@ -338,14 +436,42 @@ namespace NadekoBot.Modules.Help
         [OwnerOnly]
         public async Task Hgit()
         {
+            var helpstr = new StringBuilder();
+            helpstr.AppendLine("##"+ GetText("table_of_contents"));
+            helpstr.AppendLine(string.Join("\n", _cmds.Modules.Where(m => m.GetTopLevelModule().Name.ToLowerInvariant() != "help")
+                .Select(m => m.GetTopLevelModule().Name)
+                .Distinct()
+                .OrderBy(m => m)
+                .Prepend("Help")
+                .Select(m => string.Format("- [{0}](#{1})", m, m.ToLowerInvariant()))));
+            helpstr.AppendLine();
+            string lastModule = null;
             Dictionary<string, List<object>> cmdData = new Dictionary<string, List<object>>();
             foreach (var com in _cmds.Commands.OrderBy(com => com.Module.GetTopLevelModule().Name).GroupBy(c => c.Aliases.First()).Select(g => g.First()))
             {
                 var module = com.Module.GetTopLevelModule();
+                if (module.Name != lastModule)
+                {
+                    if (lastModule != null)
+                    {
+                        helpstr.AppendLine();
+                        helpstr.AppendLine($"###### [{GetText("back_to_toc")}](#{GetText("table_of_contents").ToLowerInvariant().Replace(' ', '-')})");
+                    }
+                    helpstr.AppendLine();
+                    helpstr.AppendLine("### " + module.Name + "  ");
+                    helpstr.AppendLine($"Submodule | {GetText("cmd_and_alias")} | {GetText("desc")} | {GetText("usage")}");
+                    helpstr.AppendLine("----------|----------------|--------------|-------");
+                    lastModule = module.Name;
+                }
+                helpstr.AppendLine($" {com.Module.Name} |" + 
+                                   $" {string.Join(" ", com.Aliases.Select(a => "`" + Prefix + a + "`"))} |" +
+                                   $" {string.Format(com.Summary, Prefix)} {_service.GetCommandRequirements(com, Context.Guild)} |" +
+                                   $" {com.RealRemarks(Prefix)}");
                 var obj = new
                 {
                     Aliases = com.Aliases.Select(x => Prefix + x).ToArray(),
-                    Description = string.Format(com.Summary, Prefix) + _service.GetCommandRequirements(com, Context.Guild),
+                    Description = string.Format(com.Summary, Prefix), 
+                    Requirements = _service.GetCommandRequirements(com, Context.Guild),
                     Usage = JsonConvert.DeserializeObject<string[]>(com.Remarks).Select(x => string.Format(x, Prefix)).ToArray(),
                     Submodule = com.Module.Name,
                     Module = com.Module.GetTopLevelModule().Name,
@@ -358,7 +484,9 @@ namespace NadekoBot.Modules.Help
                         obj
                     });
             }
+            File.WriteAllText("../../docs/Commands List.md", helpstr.ToString());
             File.WriteAllText("../../docs/cmds.json", JsonConvert.SerializeObject(cmdData));
+
             await ReplyConfirmLocalized("commandlist_regen").ConfigureAwait(false);
         }
 

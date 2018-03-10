@@ -142,6 +142,8 @@ namespace NadekoBot.Migrations
 
                     b.Property<ulong>("BufferSize");
 
+                    b.Property<int>("ConsoleOutputType");
+
                     b.Property<int>("CurrencyDropAmount");
 
                     b.Property<int?>("CurrencyDropAmountMax");
@@ -461,29 +463,6 @@ namespace NadekoBot.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("DiscordUser");
-                });
-
-            modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.Donator", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Amount");
-
-                    b.Property<DateTime?>("DateAdded");
-
-                    b.Property<string>("Name");
-
-                    b.Property<ulong>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Amount");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Donators");
                 });
 
             modelBuilder.Entity("NadekoBot.Core.Services.Database.Models.EightBallResponse", b =>
