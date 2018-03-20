@@ -241,7 +241,7 @@ namespace NadekoBot.Modules.Utility
                     .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
                                           .WithUrl("http://enecmdlist.readthedocs.io/en/latest/")
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
-                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 {_stats.Author}").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 <@177376027851358208>\n💙 {_stats.Author}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Performance").WithValue($"🔣 **{_stats.CommandsRan.ToString()}** commands \n💬 **{_stats.MessageCounter}** Msgs ({_stats.MessagesPerSecond:F2}/sec) \n💻 **{_stats.Heap}** MB Ram").WithIsInline(true))
                     .AddField(efb => efb.WithName("Uptime").WithValue($"{_stats.GetUptimeString("\n")}").WithIsInline(true))		
                     .AddField(efb => efb.WithName($"Presence").WithValue($"👥 **{_bot.GuildCount}** Servers \n✏ **{_stats.TextChannels}** Text Channels \n🔊 **{_stats.VoiceChannels}** Voice Channels").WithIsInline(true))

@@ -84,9 +84,11 @@ namespace NadekoBot.Modules.Help
 	            await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName("Music"))
-                    .AddField(efb => efb.WithName("Player").WithValue("```css\n.play      [p]\n.export    []\n.skip      [n]\n.stop      [s]\n.pause     []\n.unpause   []\n.resume    []\n.forward   []\n.rewind    []\n.seek      []\n.split     []\n.join      []\n.disconnect[]\n.destroy   [d]\n```").WithIsInline(true))
-                    .AddField(efb => efb.WithName("Controlls").WithValue("```css\n.select    []\n.nowplaying[np]\n.list      [lq]\n.songrepeat[srp]\n.shuffle   []\n.reshuffle []\n.volume    [vol]\n.restart   []\n```").WithIsInline(true))
-                    .AddField(efb => efb.WithName("Other").WithValue("```css\n.gensokyo  []\n.history   []\n.config    []\n.mprefix   [smp]\n```").WithIsInline(true)));
+                    .AddField(efb => efb.WithName("Config").WithValue("```css\n.config        [.cfg]\n.mprefix       [.smp]\n.mlanguage     [.mlang]\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Perms").WithValue("```css\n.admin       []\n.dj          []\n.user        []\n```").WithIsInline(true))                    
+                    .AddField(efb => efb.WithName("Info").WithValue("```css\n.nowplaying    [.np]\n.list          [.lq]\n.export        [.ex]\n.gensokyo      [.gr]\n.history       []\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Seeking").WithValue("```css\n.forward             [.fwd]\n.rewind              [.rew]\n.restart             [.replay]\n.seek                []\n```").WithIsInline(true))                    
+                    .AddField(efb => efb.WithName("Control").WithValue("```css\n.stop                [.s]\n.join                [.j]\n.disconnect          [.lv]\n.play                [.q]\n.pause               []\n.unpause             [.resume]\n.split               []\n.select              [.sel]\n.songrepeat          [.srp]\n.shuffle             [.sh]\n.reshuffle           [.resh]\n.skip                [.n]\n.volume              [.vol]\n.destroy             [.d]\n```").WithIsInline(true)));
 	                    break;
                     case "actions":
 	                case "Actions":
@@ -112,6 +114,7 @@ namespace NadekoBot.Modules.Help
                     var transformed = g.ElementAt(i).Select(x =>
                     {
                         return $"{Prefix + x.Aliases.First(),-15} {"[" + x.Aliases.Skip(1).FirstOrDefault() + "]",-8}";
+                        
                         var str = $"{Prefix + x.Aliases.First(),-18}";
                         var al = x.Aliases.Skip(1).FirstOrDefault();
                         if (al != null)
@@ -142,7 +145,7 @@ namespace NadekoBot.Modules.Help
         [NadekoCommand, Usage, Description, Aliases]
         [Priority(0)]
         public async Task H([Remainder] string fail)
-        {
+{
             var isMusic = true;
             var isAction = true;
             var title = fail;
@@ -161,27 +164,81 @@ namespace NadekoBot.Modules.Help
             {
 
                 case ".config":
+                case "config":
+                case "cfg":
+                case ".cfg":
                     title = ".config";
                     description = "Gives you various options like announce the song that's currently playing in the selected channel.";
                     usage = "`.config topic_channel = music`\n`.config auto_resume = true`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
+                case ".mlanguage":
+                case "mlanguage":
+                case "mlang":
+                case ".mlang":
+                    title = ".mlanguage";
+                    description = "Ene supports several user-contributed languages that you can select with this command.";
+                    usage = "`.mlang`\n`.mlang de_DE`";
+                    footer = "Module: Music";
+                    isMusic = true;
+                    break;
+                case ".admin":
+                case "admin":
+                    title = ".admin";
+                    description = "Allows whitelisting members and roles for the Admin rank. Guide here: http://enecmdlist.readthedocs.io/en/latest/Permissions/";
+                    usage = "`.admin add Staff`\n`.admin del DjRole`\n`.admin list`";
+                    footer = "Module: Music";
+                    isMusic = true;
+                    break;
+                case ".dj":
+                case "dj":
+                    title = ".dj";
+                    description = "Allows whitelisting members and roles for the DJ rank. Guide here: http://enecmdlist.readthedocs.io/en/latest/Permissions/";
+                    usage = "`.dj add @DjRole`\n`.dj del everyone`\n`.dj list`";
+                    footer = "Module: Music";
+                    isMusic = true;
+                    break;
+                case ".user":
+                case "user":
+                    title = ".user";
+                    description = "Allows whitelisting members and roles for the User rank. Guide here: http://enecmdlist.readthedocs.io/en/latest/Permissions/";
+                    usage = "`.user add @everyone`\n`.user del everyone`\n`.user list`";
+                    footer = "Module: Music";
+                    isMusic = true;
+                    break;
                 case ".nowplaying":
                 case ".np":
+                case "nowplaying":
+                case "np":
                     title = ".nowplaying / .np";
                     description = "Shows information about the song that is currently playing (name, user that added it, current timestamp, and song URL)";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".play":
+                case "play":
+                case "q":
+                case ".q":
                     description = "▫️ With no parameters shows the play commands.\n▫️ If name is provided, plays the top YouTube result for the specified song name.\n▫️ If URL is provided, plays the corresponding stream. Supported locations include (but are not limited to): YouTube (and playlists), SoundCloud, BandCamp, Vimeo, and Twitch. Local files or URLs of the following formats are also supported: MP3, FLAC, WAV, Matroska/WebM (AAC, Opus or Vorbis codecs), MP4 (AAC codec), OGG streams (Opus, Vorbis and FLAC codecs), AAC streams, Stream playlists (M3U and PLS)\n▫️ If name of playlist is provided, plays all songs in the specified list. There must already be a playlist of the specified name in the Playlists folder.";
                     usage = "`.play`\n`.play <song title>`\n`.play <URL>`\n`.play <hastebin-link>`";
                     image = "https://thumbs.gfycat.com/RadiantGrandCow-size_restricted.gif";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
+                case ".select":
+                case "select":
+                case "sel":
+                case ".sel":
+                    description = "Select one of the offered tracks after a search to play.";
+                    usage = "`.select n`\n`.play n`";
+                    footer = "Module: Music";
+                    isMusic = true;
+                    break;
                 case ".join":
+                case "join":
+                case "j":
+                case ".j":
                     title = ".join";
                     description = "Makes Ene join your current voice channel.";
                     usage = "`.join`";
@@ -189,6 +246,9 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".disconnect":
+                case "disconnect":
+                case "lv":
+                case ".lv":
                     title = ".disconnect";
                     description = "Make Ene leave the current voice channel.";
                     usage = "`.disconnect` `.lv`";
@@ -197,12 +257,16 @@ namespace NadekoBot.Modules.Help
                     break;
                 case ".s":
                 case ".stop":
+                case "stop":
+                case "s":
                     description = "Clears the queue, ends the current song, and stops the player.";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".srp":
                 case ".songrepeat":
+                case "songrepeat":
+                case "srp":
                     title = ".songrepeat";
                     description = "Make Ene leave the current voice channel.";
                     usage = "`.songrepeat all`\n`.srp single`\n`.srp off`";
@@ -210,6 +274,7 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".restart":
+                case "restart":
                     title = ".restart";
                     description = "Restart the currently playing track because why not?";
                     usage = "`.restart`";
@@ -217,6 +282,7 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".split":
+                case "split":
                     title = ".split";
                     description = "Split a YouTube video into a tracklist provided in its description.";
                     usage = "`.split <url>`";
@@ -224,6 +290,7 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".gensokyo":
+                case "gensokyo":
                     title = ".gensokyo";
                     description = "Show the current song played on gensokyoradio.net";
                     usage = "`.gensokyo`";
@@ -231,6 +298,7 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".export":
+                case "export":
                     title = ".export";
                     description = "Export the current queue to a hastebin link, can be later used as a playlist.";
                     usage = "`.export`";
@@ -240,6 +308,8 @@ namespace NadekoBot.Modules.Help
                     break;
                 case ".lq":
                 case ".list":
+                case "list":
+                case "lq":
                     title = ".lq / .list";
                     description = "Shows songs in the queue. If no page number is provided, it defaults to the first page.";
                     usage = "`.lq [pagenum]`\n`.list [pagenum]`";
@@ -248,6 +318,8 @@ namespace NadekoBot.Modules.Help
                     break;
                 case ".mprefix":
                 case ".smp":
+                case "mprefix":
+                case "smp":
                     title = ".mprefix / .smp";
                     description = "Set a Prefix of the Musicmodule for your Server. \n**Note:** If you forgot the prefix, you can do `@Ene mprefix`";
                     usage = "`.mprefix +`\n`+smp .`";
@@ -255,17 +327,23 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".shuffle":
+                case ".sh":
+                case "sh":
+                case "shuffle":
                     description = "Shuffles (changes the order, randomly) of songs that you have added to the queue.";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".reshuffle":
+                case "reshuffle":
                     description = "Reshuffles (changes the order, randomly) of songs that you have added to the queue again.";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".skip":
+                case "skip":
                 case ".n":
+                case "n":
                     title = ".skip";
                     description = "Skips a song if you added it. If you didn't add it, it adds your vote to skip it. Approximately 60% of active listeners need to vote to skip a song for it to be skipped.";
                     usage = "`.skip`\n`.skip @User`";
@@ -273,49 +351,60 @@ namespace NadekoBot.Modules.Help
                     isMusic = true;
                     break;
                 case ".pause":
+                case "pause":
                     description = "Pauses the player. The player remains paused until a DJ or Admin uses the play command.";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".forward":
+                case "forward":
                     description = "Skips forward in the queue to the provided song number, playing that song and removing any songs before that from the queue.";
                     usage = "`.forward 2:30`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".rewind":
+                case "rewind":
                     description = "Rewind the track by a given amount of time.";
                     usage = "`.rewind 30`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".seek":
+                case "seek":
                     description = "Set the position of the track to the given time.";
                     usage = "`.seek 2:45:00`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".d":
+                case "d":
                 case ".destroy":
+                case "destroy":
                     description = "Clears the queue, ends the current song, and leaves the voice channel.";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".volume":
+                case "volume":
                 case ".vol":
+                case "vol":
                     description = "Shows or sets the current volume. For best performance, it is recommended to leave this at 100 and adjust volume on an individual basis within Discord.";
                     usage = "`.volume [0-150]`\n`.vol [0-150]`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".unpause":
+                case "unpause":
                 case ".resume":
+                case "resume":
                     description = "Unpauses the player.";
                     usage = "`.unpause`\n`.resume`";
                     footer = "Module: Music";
                     isMusic = true;
                     break;
                 case ".hug":
+                case "hug":
                     title = ".hug";
                     description = "Hug someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.hug @Someone`";
@@ -323,6 +412,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".kiss":
+                case "kiss":
                     title = ".kiss";
                     description = "Kiss someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.kiss @Someone`";
@@ -330,6 +420,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".pat":
+                case "pat":
                     title = ".pat";
                     description = "Pat someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.pat @Someone`";
@@ -337,6 +428,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".poke":
+                case "poke":
                     title = ".poke";
                     description = "Poke someone, if you need their attention. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.poke @Someone`";
@@ -344,6 +436,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".bite":
+                case "bite":
                     title = ".bite";
                     description = "Bite someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.bite @Someone`";
@@ -351,6 +444,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".slap":
+                case "slap":
                     title = ".slap";
                     description = "Slap someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.slap @Someone`";
@@ -358,6 +452,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".stab":
+                case "stab":
                     title = ".stab";
                     description = "Stab someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.stab @Someone`";
@@ -365,6 +460,7 @@ namespace NadekoBot.Modules.Help
                     isAction = true;
                     break;
                 case ".shoot":
+                case "shoot":
                     title = ".shoot";
                     description = "Shoot someone. But don't worry, it won't hurt. :) Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.shoot @Someone`";
@@ -423,7 +519,7 @@ namespace NadekoBot.Modules.Help
                 await ch.EmbedAsync(GetHelpStringEmbed()).ConfigureAwait(false);
                 await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
-                    .WithDescription($"" + Context.User.Mention + " Okaay! Check your DMs! 	(＾◡＾)")).ConfigureAwait(false);
+                    .WithDescription($"" + Context.User.Mention + " Okaaay! Check your new message!~ 	(＾◡＾)")).ConfigureAwait(false);
                 return;
             }
 
