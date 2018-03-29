@@ -23,7 +23,7 @@ namespace NadekoBot.Core.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "②.①⑦-alpha";
+        public const string BotVersion = "②.⑰.③";
         public string Author => "<@199153694464278529>";
         public string Library => "Discord.Net";
 
