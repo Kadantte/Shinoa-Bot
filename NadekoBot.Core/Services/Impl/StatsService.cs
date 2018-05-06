@@ -23,7 +23,7 @@ namespace NadekoBot.Core.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "②.⑰.③";
+        public const string BotVersion = "②.②①.①";
         public string Author => "<@199153694464278529>";
         public string Library => "Discord.Net";
 
@@ -41,15 +41,12 @@ namespace NadekoBot.Core.Services.Impl
         public long CommandsRan => Interlocked.Read(ref _commandsRan);
 
         private readonly Timer _carbonitexTimer;
-#if GLOBAL_NADEKO
         private readonly Timer _botlistTimer;
-#endif
         private readonly Timer _dataTimer;
         private readonly ConnectionMultiplexer _redis;
 
         public StatsService(DiscordSocketClient client, CommandHandler cmdHandler,
-            IBotCredentials creds, NadekoBot nadeko,
-            IDataCache cache)
+            IBotCredentials creds, NadekoBot nadeko, IDataCache cache)
         {
             _log = LogManager.GetCurrentClassLogger();
             _client = client;
@@ -164,7 +161,7 @@ namespace NadekoBot.Core.Services.Impl
                     }
                 }, null, TimeSpan.FromHours(1), TimeSpan.FromHours(1));
             }
-#if GLOBAL_NADEKO
+
             _botlistTimer = new Timer(async (state) =>
             {
                 if (string.IsNullOrWhiteSpace(_creds.BotListToken))
@@ -194,7 +191,6 @@ namespace NadekoBot.Core.Services.Impl
                     // ignored
                 }
             }, null, TimeSpan.FromMinutes(5), TimeSpan.FromHours(1));
-#endif
 
             var platform = "other";
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

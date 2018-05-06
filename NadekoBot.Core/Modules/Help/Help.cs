@@ -6,7 +6,6 @@ using NadekoBot.Core.Services;
 using System.Threading.Tasks;
 using System;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.Help.Services;
@@ -14,6 +13,9 @@ using NadekoBot.Modules.Permissions.Services;
 using NadekoBot.Common;
 using NadekoBot.Common.Replacements;
 using Newtonsoft.Json;
+using NadekoBot.Core.Common;
+using NadekoBot.Core.Modules.Help.Common;
+using System.Text;
 
 namespace NadekoBot.Modules.Help
 {
@@ -24,6 +26,7 @@ namespace NadekoBot.Modules.Help
         private readonly IBotCredentials _creds;
         private readonly CommandService _cmds;
         private readonly GlobalPermissionService _perms;
+        private readonly IServiceProvider _services;
 
         public EmbedBuilder GetHelpStringEmbed()
         {
@@ -43,11 +46,13 @@ namespace NadekoBot.Modules.Help
             return embed.ToEmbed();
         }
 
-        public Help(IBotCredentials creds, GlobalPermissionService perms, CommandService cmds)
+        public Help(IBotCredentials creds, GlobalPermissionService perms, CommandService cmds,
+            IServiceProvider services)
         {
             _creds = creds;
             _cmds = cmds;
             _perms = perms;
+            _services = services;
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -61,20 +66,48 @@ namespace NadekoBot.Modules.Help
         }
 
         [NadekoCommand, Usage, Description, Aliases]
-        public async Task Commands([Remainder] string module = null)
+        [NadekoOptions(typeof(CommandsOptions))]
+        public async Task Commands(string module = null, params string[] args)
         {
             var channel = Context.Channel;
             var moduleName = module;
+            var (opts, _) = OptionsParser.Default.ParseFrom(new CommandsOptions(), args);
 
             module = module?.Trim().ToUpperInvariant();
             if (string.IsNullOrWhiteSpace(module))
                 return;
+
+            // Find commands for that module
+            // don't show commands which are blocked
+            // order by name
             var cmds = _cmds.Commands.Where(c => c.Module.GetTopLevelModule().Name.ToUpperInvariant().StartsWith(module))
                                                 .Where(c => !_perms.BlockedCommands.Contains(c.Aliases.First().ToLowerInvariant()))
                                                   .OrderBy(c => c.Aliases.First())
-                                                  .Distinct(new CommandTextEqualityComparer())
-                                                  .GroupBy(c => c.Module.Name.Replace("Commands", ""));
-            cmds = cmds.OrderBy(x => x.Key == x.First().Module.Name ? int.MaxValue : x.Count());
+                                                  .Distinct(new CommandTextEqualityComparer());
+
+
+            // check preconditions for all commands, but only if it's not 'all'
+            // because all will show all commands anyway, no need to check
+            HashSet<CommandInfo> succ = new HashSet<CommandInfo>();
+            if (opts.View != CommandsOptions.ViewType.All)
+            {
+                succ = new HashSet<CommandInfo>((await Task.WhenAll(cmds.Select(async x =>
+                {
+                    var pre = (await x.CheckPreconditionsAsync(Context, _services));
+                    return (Cmd: x, Succ: pre.IsSuccess);
+                })))
+                    .Where(x => x.Succ)
+                    .Select(x => x.Cmd));
+
+                if (opts.View == CommandsOptions.ViewType.Hide)
+                {
+                    // if hidden is specified, completely remove these commands from the list
+                    cmds = cmds.Where(x => succ.Contains(x));
+                }
+            }
+
+            var cmdsWithGroup = cmds.GroupBy(c => c.Module.Name.Replace("Commands", ""))
+                .OrderBy(x => x.Key == x.First().Module.Name ? int.MaxValue : x.Count());
             if (!cmds.Any())
             {
 	            switch (moduleName)
@@ -99,12 +132,15 @@ namespace NadekoBot.Modules.Help
                     .AddField(efb => efb.WithName("Bad Actions").WithValue("```css\n .slap        []\ne.kick        []\n .stab        []\n .shoot       []\n .bite        []\n```").WithIsInline(true)));
 	                    break;
 	                default:
-		                await ReplyErrorLocalized("module_not_found").ConfigureAwait(false);
+                if (opts.View != CommandsOptions.ViewType.Hide)
+                    await ReplyErrorLocalized("module_not_found").ConfigureAwait(false);
+                else
+                    await ReplyErrorLocalized("module_not_found_or_cant_exec").ConfigureAwait(false);
 		                return;
                 }
             }
-            var i = 0;
-            var groups = cmds.GroupBy(x => i++ / 48).ToArray();
+           var i = 0;
+            var groups = cmdsWithGroup.GroupBy(x => i++ / 48).ToArray();
             var embed = new EmbedBuilder().WithOkColor();
             foreach (var g in groups)
             {
@@ -113,13 +149,12 @@ namespace NadekoBot.Modules.Help
                 {
                     var transformed = g.ElementAt(i).Select(x =>
                     {
+                        //if cross is specified, and the command doesn't satisfy the requirements, cross it out
+                        if (opts.View == CommandsOptions.ViewType.Cross)
+                        {
+                            return $"{(succ.Contains(x) ? "✅" : "❌")}{Prefix + x.Aliases.First(),-15} {"[" + x.Aliases.Skip(1).FirstOrDefault() + "]",-8}";
+                        }
                         return $"{Prefix + x.Aliases.First(),-15} {"[" + x.Aliases.Skip(1).FirstOrDefault() + "]",-8}";
-                        
-                        var str = $"{Prefix + x.Aliases.First(),-18}";
-                        var al = x.Aliases.Skip(1).FirstOrDefault();
-                        if (al != null)
-                            str += $" {"(" + Prefix + al + ")", -9}";
-                        return str;
                     });
 
                     if (i == last - 1 && (i + 1) % 2 != 0)
@@ -128,12 +163,13 @@ namespace NadekoBot.Modules.Help
                         var count = transformed.Count();
                         transformed = transformed
                             .GroupBy(x => grp++ % count / 2)
-                            .Select(x => {
+                            .Select(x =>
+                            {
                                 if (x.Count() == 1)
                                     return $"{x.First()}";
                                 else
                                     return String.Concat(x);
-                            });                        
+                            });
                     }
                     embed.AddField(g.ElementAt(i).Key, "```css\n" + string.Join("\n", transformed) + "\n```", true);
                 }
@@ -589,11 +625,11 @@ namespace NadekoBot.Modules.Help
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Guide()
         {
-            await ConfirmLocalized("guide", 
+            await ConfirmLocalized("guide",
                 "https://nadekobot.me/commands",
                 "http://nadekobot.readthedocs.io/en/latest/").ConfigureAwait(false);
         }
-        
+
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Donate()
         {
@@ -623,7 +659,7 @@ namespace NadekoBot.Modules.Help
         public int GetHashCode(CommandInfo obj) => obj.Aliases.First().GetHashCode();
 
     }
-    
+
     public class JsonCommandData
     {
         public string[] Aliases { get; set; }
