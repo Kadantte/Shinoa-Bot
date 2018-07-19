@@ -7,7 +7,6 @@ using System.Text;
 using NadekoBot.Extensions;
 using NadekoBot.Core.Services.Impl;
 using System.Net.Http;
-using ImageSharp;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Discord.WebSocket;
@@ -25,25 +24,27 @@ namespace NadekoBot.Modules.Utility
         private readonly IBotCredentials _creds;
         private readonly NadekoBot _bot;
         private readonly DbService _db;
+        private readonly IHttpClientFactory _httpFactory;
 
-        public Utility(NadekoBot nadeko, DiscordSocketClient client, 
+        public Utility(NadekoBot nadeko, DiscordSocketClient client,
             IStatsService stats, IBotCredentials creds,
-            DbService db)
+            DbService db, IHttpClientFactory factory)
         {
             _client = client;
             _stats = stats;
             _creds = creds;
             _bot = nadeko;
-            _db = db;            
+            _db = db;
+            _httpFactory = factory;
         }
 
         [NadekoCommand, Usage, Description, Aliases]
         public async Task TogetherTube()
         {
             Uri target;
-            using (var http = new HttpClient())
+            using (var http = _httpFactory.CreateClient())
+            using (var res = await http.GetAsync("https://togethertube.com/room/create").ConfigureAwait(false))
             {
-                var res = await http.GetAsync("https://togethertube.com/room/create").ConfigureAwait(false);
                 target = res.RequestMessage.RequestUri;
             }
 
@@ -51,7 +52,7 @@ namespace NadekoBot.Modules.Utility
                 .WithAuthor(eab => eab.WithIconUrl("https://togethertube.com/assets/img/favicons/favicon-32x32.png")
                 .WithName("Together Tube")
                 .WithUrl("https://togethertube.com/"))
-                .WithDescription(Context.User.Mention + " " + GetText("togtub_room_link") +  "\n" + target));
+                .WithDescription(Context.User.Mention + " " + GetText("togtub_room_link") + "\n" + target)).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -62,8 +63,7 @@ namespace NadekoBot.Modules.Utility
             if (string.IsNullOrWhiteSpace(game))
                 return;
 
-            var socketGuild = Context.Guild as SocketGuild;
-            if (socketGuild == null)
+            if (!(Context.Guild is SocketGuild socketGuild))
             {
                 _log.Warn("Can't cast guild to socket guild.");
                 return;
@@ -92,7 +92,7 @@ namespace NadekoBot.Modules.Utility
         public async Task InRole([Remainder] IRole role)
         {
             var rng = new NadekoRandom();
-            var usrs = (await Context.Guild.GetUsersAsync()).ToArray();
+            var usrs = (await Context.Guild.GetUsersAsync().ConfigureAwait(false)).ToArray();
             var roleUsers = usrs
                 .Where(u => u.RoleIds.Contains(role.Id))
                 .Select(u => u.ToString())
@@ -121,7 +121,7 @@ namespace NadekoBot.Modules.Utility
             {
                 builder.AppendLine($"{p.Name} : {p.GetValue(perms, null)}");
             }
-            await Context.Channel.SendConfirmAsync(builder.ToString());
+            await Context.Channel.SendConfirmAsync(builder.ToString()).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -177,8 +177,8 @@ namespace NadekoBot.Modules.Utility
                 }
                 else
                 {
-                    
-                    await channel.SendConfirmAsync(GetText("roles_page", page, Format.Bold(target.ToString())), 
+
+                    await channel.SendConfirmAsync(GetText("roles_page", page, Format.Bold(target.ToString())),
                         "\n• " + string.Join("\n• ", (IEnumerable<IRole>)roles).SanitizeMentions()).ConfigureAwait(false);
                 }
             }
@@ -222,9 +222,9 @@ namespace NadekoBot.Modules.Utility
         [RequireUserPermission(ChannelPermission.CreateInstantInvite)]
         public async Task CreateInvite()
         {
-            var invite = await ((ITextChannel)Context.Channel).CreateInviteAsync(0, null, isUnique: true);
+            var invite = await ((ITextChannel)Context.Channel).CreateInviteAsync(0, null, isUnique: true).ConfigureAwait(false);
 
-            await Context.Channel.SendConfirmAsync($"{Context.User.Mention} https://discord.gg/{invite.Code}");
+            await Context.Channel.SendConfirmAsync($"{Context.User.Mention} https://discord.gg/{invite.Code}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -241,22 +241,22 @@ namespace NadekoBot.Modules.Utility
                     .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
                                           .WithUrl("http://enecmdlist.readthedocs.io/en/latest/")
                                           .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
-                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 <@177376027851358208>\n💙 {_stats.Author}").WithIsInline(true))
+                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 {_stats.Author}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Performance").WithValue($"🔣 **{_stats.CommandsRan.ToString()}** commands \n💬 **{_stats.MessageCounter}** Msgs ({_stats.MessagesPerSecond:F2}/sec) \n💻 **{_stats.Heap}** MB Ram").WithIsInline(true))
                     .AddField(efb => efb.WithName("Uptime").WithValue($"{_stats.GetUptimeString("\n")}").WithIsInline(true))		
                     .AddField(efb => efb.WithName($"Presence").WithValue($"👥 **{_bot.GuildCount}** Servers \n✏ **{_stats.TextChannels}** Text Channels \n🔊 **{_stats.VoiceChannels}** Voice Channels").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Shard").WithValue($"👾 #{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Latency").WithValue($"📡 **{(int)sw.Elapsed.TotalMilliseconds}** ms").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Documentation").WithValue($"🛠️ type `.help`").WithIsInline(true))	
-                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://gremagol.com/inv-ene)** \n❤️ My Cave: **[Click Here](https://gremagol.com/discord)**").WithIsInline(true))							
+                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://discordapp.com/oauth2/authorize?scope=bot&client_id=464107301285134346&permissions=66186303)** \n❤️ My Cave: **[Click Here](https://discord.gg/fWDffyn)**").WithIsInline(true))							
                     .AddField(efb => efb.WithName($"Thanks to").WithValue($"**Kwoth#2560**\nfor creating the \n[NadekoBot](https://github.com/Kwoth/NadekoBot) and\nthe [Embed Builder](https://github.com/Kwoth/embed-visualizer)\n\n**Fre_d#0310**\nfor creating\n[FredBoat](https://github.com/Frederikam/FredBoat)").WithIsInline(true))	
                     .AddField(efb => efb.WithName($"Much love to").WithValue($"Kwoth#2560\nFre_d#0310\nSkarrior#8888\nMacley-Kun#9105\nMΔИՄΣL#0281\nOri#9159").WithIsInline(true))
-                    .WithImageUrl("https://i.imgur.com/UDHaUMM.gif")
+                    .WithImageUrl("https://i.imgur.com/VzxZjol.gif")
 					.WithFooter(efb => efb.WithText($"Without you guys, Ene wouldn't be like this nowadays! 💙")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]
-        public async Task Showemojis([Remainder] string emojis)
+        public async Task Showemojis([Remainder] string _) // need to have the parameter so that the message.tags gets populated
         {
             var tags = Context.Message.Tags.Where(t => t.Type == TagType.Emoji).Select(t => (Emote)t.Value);
 
@@ -329,8 +329,10 @@ namespace NadekoBot.Modules.Utility
                         return msg;
                     })
                 });
-            await Context.User.SendFileAsync(
-                await JsonConvert.SerializeObject(grouping, Formatting.Indented).ToStream().ConfigureAwait(false), title, title, false).ConfigureAwait(false);
+            using (var stream = await JsonConvert.SerializeObject(grouping, Formatting.Indented).ToStream().ConfigureAwait(false))
+            {
+                await Context.User.SendFileAsync(stream, title, title, false).ConfigureAwait(false);
+            }
         }
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Ping()

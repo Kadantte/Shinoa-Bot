@@ -37,9 +37,9 @@ namespace NadekoBot.Modules.Help
                 .Build();
 
 
-            if (!CREmbed.TryParse(_bc.BotConfig.HelpString, out var embed))
+            if (!CREmbed.TryParse(Bc.BotConfig.HelpString, out var embed))
                 return new EmbedBuilder().WithOkColor()
-                    .WithDescription(String.Format(_bc.BotConfig.HelpString, _creds.ClientId, Prefix));
+                    .WithDescription(String.Format(Bc.BotConfig.HelpString, _creds.ClientId, Prefix));
 
             r.Replace(embed);
 
@@ -66,12 +66,12 @@ namespace NadekoBot.Modules.Help
         }
 
         [NadekoCommand, Usage, Description, Aliases]
-        [NadekoOptions(typeof(CommandsOptions))]
+        [NadekoOptionsAttribute(typeof(CommandsOptions))]
         public async Task Commands(string module = null, params string[] args)
         {
             var channel = Context.Channel;
             var moduleName = module;
-            var (opts, _) = OptionsParser.Default.ParseFrom(new CommandsOptions(), args);
+            var (opts, _) = OptionsParser.ParseFrom(new CommandsOptions(), args);
 
             module = module?.Trim().ToUpperInvariant();
             if (string.IsNullOrWhiteSpace(module))
@@ -117,18 +117,18 @@ namespace NadekoBot.Modules.Help
 	            await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName("Music"))
-                    .AddField(efb => efb.WithName("Config").WithValue("```css\n.config        [.cfg]\n.mprefix       [.smp]\n.mlanguage     [.mlang]\n```").WithIsInline(true))
-                    .AddField(efb => efb.WithName("Perms").WithValue("```css\n.admin       []\n.dj          []\n.user        []\n```").WithIsInline(true))                    
-                    .AddField(efb => efb.WithName("Info").WithValue("```css\n.nowplaying    [.np]\n.list          [.lq]\n.export        [.ex]\n.gensokyo      [.gr]\n.history       []\n```").WithIsInline(true))
-                    .AddField(efb => efb.WithName("Seeking").WithValue("```css\n.forward             [.fwd]\n.rewind              [.rew]\n.restart             [.replay]\n.seek                []\n```").WithIsInline(true))                    
-                    .AddField(efb => efb.WithName("Control").WithValue("```css\n.stop                [.s]\n.join                [.j]\n.disconnect          [.lv]\n.play                [.q]\n.pause               []\n.unpause             [.resume]\n.split               []\n.select              [.sel]\n.songrepeat          [.srp]\n.shuffle             [.sh]\n.reshuffle           [.resh]\n.skip                [.n]\n.volume              [.vol]\n.destroy             [.d]\n```").WithIsInline(true)));
+                    .AddField(efb => efb.WithName("Config").WithValue("```css\n🎶.config        [.cfg]\n🎶.mprefix       [.smp]\n🎶.mlanguage     [.mlang]\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Perms").WithValue("```css\n🎶.admin       []\n🎶.dj          []\n🎶.user        []\n```").WithIsInline(true))                    
+                    .AddField(efb => efb.WithName("Info").WithValue("```css\n🎶.nowplaying    [.np]\n🎶.list          [.lq]\n🎶.export        [.ex]\n🎶.gensokyo      [.gr]\n🎶.history       []\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Seeking").WithValue("```css\n🎶.forward             [.fwd]\n🎶.rewind              [.rew]\n🎶.restart             [.replay]\n🎶.seek                []\n```").WithIsInline(true))                    
+                    .AddField(efb => efb.WithName("Control").WithValue("```css\n🎶.stop                [.s]\n🎶.join                [.j]\n🎶.disconnect          [.lv]\n🎶.play                [.q]\n🎶.pause               []\n🎶 .unpause             [.resume]\n🎶 .split               []\n🎶 .select              [.sel]\n🎶 .songrepeat          [.srp]\n🎶 .shuffle             [.sh]\n🎶 .reshuffle           [.resh]\n🎶 .skip                [.n]\n🎶 .volume              [.vol]\n🎶 .destroy             [.d]\n```").WithIsInline(true)));
 	                    break;
                     case "actions":
 	                case "Actions":
 	            await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
                     .WithAuthor(eab => eab.WithName("Actions"))
-                    .AddField(efb => efb.WithName("Good Actions").WithValue("```css\n.pat         []\n.hug         []\n.kiss        []\n.poke        []\n```").WithIsInline(true))
+                    .AddField(efb => efb.WithName("Good Actions").WithValue("```css\n.pat         []\n.hug         []\n.kiss        []\n.poke        []\n.lick        []\n.hf          []\n.cuddle      []\n```").WithIsInline(true))
                     .AddField(efb => efb.WithName("Bad Actions").WithValue("```css\n .slap        []\ne.kick        []\n .stab        []\n .shoot       []\n .bite        []\n```").WithIsInline(true)));
 	                    break;
 	                default:
@@ -304,7 +304,7 @@ namespace NadekoBot.Modules.Help
                 case "songrepeat":
                 case "srp":
                     title = ".songrepeat";
-                    description = "Make Ene leave the current voice channel.";
+                    description = "Toggle between repeat modes.\n\nSingle = Only repeating the playing song\nAll = Repeat the whole queue";
                     usage = "`.songrepeat all`\n`.srp single`\n`.srp off`";
                     footer = "Module: Music";
                     isMusic = true;
@@ -460,6 +460,30 @@ namespace NadekoBot.Modules.Help
                     title = ".pat";
                     description = "Pat someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
                     usage = "`.pat @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".cuddle":
+                case "cuddle":
+                    title = ".cuddle";
+                    description = "Cuddle with someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.cuddle @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".hf":
+                case "hf":
+                    title = ".hf";
+                    description = "Ask someone to do a highfive. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.hf @Someone`";
+                    footer = "Module: Actions";
+                    isAction = true;
+                    break;
+                case ".lick":
+                case "lick":
+                    title = ".lick";
+                    description = "Lick someone. Remember: If you change the prefix, it'll be still `.` as prefix.";
+                    usage = "`.lick @Someone`";
                     footer = "Module: Actions";
                     isAction = true;
                     break;
@@ -642,8 +666,8 @@ namespace NadekoBot.Modules.Help
             await Context.Channel.EmbedAsync(
                     new EmbedBuilder().WithOkColor()
                         .WithDescription($"Here are some Invite Links! 💙")
-                        .AddField(efb => efb.WithName($"💌Invite me💌").WithValue($"⏩ [Click Here](http://www.gremagol.com/inv-ene) ⏪").WithIsInline(true))
-                        .AddField(efb => efb.WithName($"💟Join my Server💟").WithValue($"⏩ [Click Here](https://gremagol.com/discord) ⏪").WithIsInline(true))).ConfigureAwait(false);
+                        .AddField(efb => efb.WithName($"💌Invite me💌").WithValue($"⏩ [Click Here](https://discordapp.com/oauth2/authorize?scope=bot&client_id=464107301285134346&permissions=66186303) ⏪").WithIsInline(true))
+                        .AddField(efb => efb.WithName($"💟Join my Server💟").WithValue($"⏩ [Click Here](https://discord.gg/fWDffyn) ⏪").WithIsInline(true))).ConfigureAwait(false);
         }
 
         private string GetRemarks(string[] arr)
@@ -654,9 +678,9 @@ namespace NadekoBot.Modules.Help
 
     public class CommandTextEqualityComparer : IEqualityComparer<CommandInfo>
     {
-        public bool Equals(CommandInfo x, CommandInfo y) => x.Aliases.First() == y.Aliases.First();
+        public bool Equals(CommandInfo x, CommandInfo y) => x.Aliases[0] == y.Aliases[0];
 
-        public int GetHashCode(CommandInfo obj) => obj.Aliases.First().GetHashCode();
+        public int GetHashCode(CommandInfo obj) => obj.Aliases[0].GetHashCode(StringComparison.InvariantCulture);
 
     }
 

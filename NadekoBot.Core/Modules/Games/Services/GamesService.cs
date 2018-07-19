@@ -27,9 +27,9 @@ namespace NadekoBot.Modules.Games.Services
     {
         private readonly IBotConfigProvider _bc;
 
-        public readonly ConcurrentDictionary<ulong, GirlRating> GirlRatings = new ConcurrentDictionary<ulong, GirlRating>();
+        public ConcurrentDictionary<ulong, GirlRating> GirlRatings { get; } = new ConcurrentDictionary<ulong, GirlRating>();
 
-        public readonly ImmutableArray<string> EightBallResponses;
+        public ImmutableArray<string> EightBallResponses { get; }
 
         private readonly Timer _t;
         private readonly CommandHandler _cmd;
@@ -38,13 +38,13 @@ namespace NadekoBot.Modules.Games.Services
         private readonly Logger _log;
         private readonly NadekoRandom _rng;
         private readonly ICurrencyService _cs;
-        public readonly string TypingArticlesPath = "data/typing_articles3.json";
+        public string TypingArticlesPath { get; } = "data/typing_articles3.json";
         private readonly CommandHandler _cmdHandler;
 
         public List<TypingArticle> TypingArticles { get; } = new List<TypingArticle>();
 
         //channelId, game
-        public ConcurrentDictionary<ulong, Acrophobia> AcrophobiaGames { get; } = new ConcurrentDictionary<ulong, Acrophobia>();
+        public ConcurrentDictionary<ulong, AcrophobiaGame> AcrophobiaGames { get; } = new ConcurrentDictionary<ulong, AcrophobiaGame>();
 
         public ConcurrentDictionary<ulong, Hangman> HangmanGames { get; } = new ConcurrentDictionary<ulong, Hangman>();
         public TermPool TermPool { get; } = new TermPool();
@@ -52,7 +52,7 @@ namespace NadekoBot.Modules.Games.Services
         public ConcurrentDictionary<ulong, TriviaGame> RunningTrivias { get; } = new ConcurrentDictionary<ulong, TriviaGame>();
         public Dictionary<ulong, TicTacToe> TicTacToeGames { get; } = new Dictionary<ulong, TicTacToe>();
         public ConcurrentDictionary<ulong, TypingGame> RunningContests { get; } = new ConcurrentDictionary<ulong, TypingGame>();
-        public ConcurrentDictionary<ulong, Nunchi> NunchiGames { get; } = new ConcurrentDictionary<ulong, Common.Nunchi.Nunchi>();
+        public ConcurrentDictionary<ulong, NunchiGame> NunchiGames { get; } = new ConcurrentDictionary<ulong, Common.Nunchi.NunchiGame>();
 
         public GamesService(CommandHandler cmd, IBotConfigProvider bc, NadekoBot bot,
             NadekoStrings strings, IDataCache data, CommandHandler cmdHandler,
@@ -103,7 +103,7 @@ namespace NadekoBot.Modules.Games.Services
             AcrophobiaGames.Clear();
             HangmanGames.ForEach(x => x.Value.Dispose());
             HangmanGames.Clear();
-            await Task.WhenAll(RunningTrivias.Select(x => x.Value.StopGame()));
+            await Task.WhenAll(RunningTrivias.Select(x => x.Value.StopGame())).ConfigureAwait(false);
             RunningTrivias.Clear();
 
             TicTacToeGames.Clear();
@@ -141,11 +141,10 @@ namespace NadekoBot.Modules.Games.Services
         private ConcurrentDictionary<ulong, object> _locks { get; } = new ConcurrentDictionary<ulong, object>();
         public ConcurrentHashSet<ulong> HalloweenAwardedUsers { get; } = new ConcurrentHashSet<ulong>();
 
-        public string GetRandomCurrencyImage()
+        public byte[] GetRandomCurrencyImage()
         {
             var rng = new NadekoRandom();
-            var cur = _images.ImageUrls.Currency;
-            return cur[rng.Next(0, cur.Length)];
+            return _images.Currency[rng.Next(0, _images.Currency.Count)];
         }
 
         private string GetText(ITextChannel ch, string key, params object[] rep)
@@ -192,15 +191,11 @@ namespace NadekoBot.Modules.Games.Services
                                     + " " + GetText(channel, "pick_sn", prefix)
                                 : GetText(channel, "curgen_pl", dropAmount, _bc.BotConfig.CurrencySign)
                                     + " " + GetText(channel, "pick_pl", prefix);
-                            var file = GetRandomCurrencyImage();
-
-                            var sent = await channel.EmbedAsync(new EmbedBuilder()
-                                .WithOkColor()
-                                .WithDescription(toSend)
-                                .WithImageUrl(file));
-
-                            msgs[0] = sent;
-
+                            using (var stream = GetRandomCurrencyImage().ToStream())
+                            {
+                                var sent = await channel.SendFileAsync(stream, "currency_image.png", toSend).ConfigureAwait(false);
+                                msgs[0] = sent;
+                            }
                             PlantedFlowers.AddOrUpdate(channel.Id, msgs.ToList(), (id, old) => { old.AddRange(msgs); return old; });
                         }
                     }

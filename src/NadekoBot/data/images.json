@@ -1,0 +1,62 @@
+{
+  "Version": 2,
+  "Coins": {
+    "Heads": [
+      "https://i.imgur.com/ChkCud0.png"
+    ],
+    "Tails": [
+      "https://i.imgur.com/qOtZoKX.png"
+    ]
+  },
+  "Currency": [
+    "https://i.imgur.com/QqypZBR.gif",
+    "https://i.imgur.com/dn8954s.gif",
+    "https://i.imgur.com/m86Sk7j.png"
+  ],
+  "Dice": [
+    "https://i.imgur.com/KyOfDw1.png",
+    "https://i.imgur.com/IX8xjZ3.png",
+    "https://i.imgur.com/k9GqKp5.png",
+    "https://i.imgur.com/rmhTSnp.png",
+    "https://i.imgur.com/93PUmFr.png",
+    "https://i.imgur.com/CMBCJRC.png",
+    "https://i.imgur.com/VqhUpsV.png",
+    "https://i.imgur.com/r6rFCuT.png",
+    "https://i.imgur.com/eIxuOpg.png",
+    "https://i.imgur.com/At9YgRO.png"
+  ],
+  "Rategirl": {
+    "Matrix": "https://i.imgur.com/hWhvgry.png",
+    "Dot": "https://i.imgur.com/WkPSUOy.png"
+  },
+  "Xp": {
+    "Bg": "https://i.imgur.com/25HbGrl.png"
+  },
+  "Rip": {
+    "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/rip.png",
+    "Overlay": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/overlay.png"
+  },
+  "Slots": {
+    "Emojis": [
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/0.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/1.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/2.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/3.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/4.png",
+      "https://i.imgur.com/LG4uOe4.png"
+    ],
+    "Numbers": [
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/0.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/1.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/2.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/3.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/4.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/5.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/6.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/7.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/8.png",
+      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/9.png"
+    ],
+    "Bg": "https://i.imgur.com/0Z1dYw4.png"
+  }
+}

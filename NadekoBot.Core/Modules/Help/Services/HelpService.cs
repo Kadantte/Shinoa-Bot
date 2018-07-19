@@ -12,7 +12,6 @@ using NadekoBot.Core.Services.Impl;
 using NadekoBot.Common;
 using NLog;
 using CommandLine;
-using CommandLine.Text;
 
 namespace NadekoBot.Modules.Help.Services
 {
@@ -64,7 +63,7 @@ namespace NadekoBot.Modules.Help.Services
                 .WithFooter(efb => efb.WithText(GetText("module", guild, com.Module.GetTopLevelModule().Name)))
                 .WithColor(NadekoBot.OkColor);
 
-            var opt = ((NadekoOptions)com.Attributes.FirstOrDefault(x => x is NadekoOptions))?.OptionType;
+            var opt = ((NadekoOptionsAttribute)com.Attributes.FirstOrDefault(x => x is NadekoOptionsAttribute))?.OptionType;
             if (opt != null)
             {
                 var hs = GetCommandOptionHelp(opt);

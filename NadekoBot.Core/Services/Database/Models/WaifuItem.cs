@@ -53,7 +53,7 @@ namespace NadekoBot.Core.Services.Database.Models
             Item = item;
         }
 
-        public static WaifuItem GetItem(ItemName itemName, int mult)
+        public static WaifuItem GetItemObject(ItemName itemName, int mult)
         {
             WaifuItem wi;
             switch (itemName)
@@ -146,8 +146,7 @@ namespace NadekoBot.Core.Services.Database.Models
                     wi = new WaifuItem("🥛", 125, itemName);
                     break;
                 default:
-
-                    throw new ArgumentException(nameof(itemName));
+                    throw new ArgumentException("Item is not implemented", nameof(itemName));
             }
             wi.Price = wi.Price * mult;
             return wi;
@@ -155,17 +154,3 @@ namespace NadekoBot.Core.Services.Database.Models
     }
 }
 
-
-/*
-🍪 Cookie 10
-🌹  Rose 50
-💌 Love Letter 100
-🍫  Chocolate 200
-🍚 Rice 400
-🎟  Movie Ticket 800
-📔 Book 1.5k
-💄  Lipstick 3k
-💻 Laptop 5k
-🎻 Violin 7.5k
-💍 Ring 10k
-*/

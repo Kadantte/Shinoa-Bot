@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using NadekoBot.Extensions;
 using System;
 using System.Linq;
@@ -34,7 +33,7 @@ namespace NadekoBot.Modules.Administration
                         .WithOkColor()
                         .WithTitle(GetText("timezones_available"))
                         .WithDescription(string.Join("\n", timezones.Skip(curPage * timezonesPerPage).Take(timezonesPerPage).Select(x => $"`{x.Id,-25}` {(x.BaseUtcOffset < TimeSpan.Zero? "-" : "+")}{x.BaseUtcOffset:hhmm}"))),
-                    timezones.Length, timezonesPerPage);
+                    timezones.Length, timezonesPerPage).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]

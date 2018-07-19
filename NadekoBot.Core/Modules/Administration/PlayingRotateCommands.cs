@@ -1,11 +1,9 @@
 ﻿using Discord.Commands;
 using NadekoBot.Core.Services;
-using NadekoBot.Core.Services.Database.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.Administration.Services;
-using Microsoft.EntityFrameworkCore;
 using Discord;
 
 namespace NadekoBot.Modules.Administration
@@ -15,7 +13,6 @@ namespace NadekoBot.Modules.Administration
         [Group]
         public class PlayingRotateCommands : NadekoSubmodule<PlayingRotateService>
         {
-            private static readonly object _locker = new object();
             private readonly DbService _db;
 
             public PlayingRotateCommands(DbService db)
@@ -37,7 +34,7 @@ namespace NadekoBot.Modules.Administration
             [OwnerOnly]
             public async Task AddPlaying(ActivityType t, [Remainder] string status)
             {
-                await _service.AddPlaying(t, status);
+                await _service.AddPlaying(t, status).ConfigureAwait(false);
 
                 await ReplyConfirmLocalized("ropl_added").ConfigureAwait(false);
             }

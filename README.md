@@ -1,14 +1,13 @@
-Hello there!  
-This is the Ene-Bot. She's basically a clone of the NadekoBot.   
-But Ene has a changed Source and a custom Music Module! :o  
+![img](https://ci.appveyor.com/api/projects/status/gmu6b3ltc80hr3k9?svg=true)
+[![Discord](https://discordapp.com/api/guilds/117523346618318850/widget.png)](https://discord.gg/nadekobot)
+[![Documentation Status](https://readthedocs.org/projects/nadekobot/badge/?version=latest)](http://nadekobot.readthedocs.io/en/latest/?badge=latest)
+[![Discord Bots](https://discordbots.org/api/widget/status/116275390695079945.svg)](https://discordbots.org/bot/116275390695079945)
+[![nadeko0](https://cdn.discordapp.com/attachments/266240393639755778/281920716809699328/part1.png)](https://nadekobot.me)
+[![nadeko1](https://cdn.discordapp.com/attachments/266240393639755778/281920134967328768/part2.png)](https://discordapp.com/oauth2/authorize?client_id=170254782546575360&scope=bot&permissions=66186303)
+[![nadeko2](https://cdn.discordapp.com/attachments/266240393639755778/281920161311883264/part3.png)](https://nadekobot.me/commands)
 
-[![Discord](https://discordapp.com/api/guilds/402138197422768128/widget.png)](http://gremagol.com/discord)
-[![Ene0](https://i.imgur.com/fFdUmKD.png)](http://gremagol.com/discord)
-[![Ene1](https://i.imgur.com/opqiNVO.png)](http://gremagol.com/inv-ene)
-[![Ene2](https://i.imgur.com/1XfvrNL.png)](http://gremagol.com/discord)
+## For Updates, Help and Guidelines
 
-## For Help, Guides and Commands:
-
-| [![discord](http://i.imgur.com/Cz1RWW6.png)](http://gremagol.com/discord) | [![Wiki](http://i.imgur.com/e8eaWS3.png)](http://enecmdlist.readthedocs.io/en/latest/) |
-| --- | --- |
-| **Join my Discord server for help.** | **Read the Docs for self-hosting.** |
+| [![twitter](https://cdn.discordapp.com/attachments/155726317222887425/252192520094613504/twiter_banner.JPG)](https://twitter.com/TheNadekoBot) | [![discord](https://cdn.discordapp.com/attachments/266240393639755778/281920766490968064/discord.png)](https://discord.gg/nadekobot) | [![Wiki](https://cdn.discordapp.com/attachments/266240393639755778/281920793330581506/datcord.png)](http://nadekobot.readthedocs.io/en/latest/)
+| --- | --- | --- |
+| **Follow me on Twitter.** | **Join my Discord server for help.** | **Read the Docs for self-hosting.** |
