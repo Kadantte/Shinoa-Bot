@@ -1,5 +1,5 @@
 {
-  "Version": 2,
+  "Version": 3,
   "Coins": {
     "Heads": [
       "https://i.imgur.com/ChkCud0.png"
@@ -30,7 +30,7 @@
     "Dot": "https://i.imgur.com/WkPSUOy.png"
   },
   "Xp": {
-    "Bg": "https://i.imgur.com/25HbGrl.png"
+    "Bg": "https://i.imgur.com/Ztd6EJi.gif"
   },
   "Rip": {
     "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/rip.png",

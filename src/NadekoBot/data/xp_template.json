@@ -83,7 +83,33 @@
     },
     "Xp": {
       "Bar": {
-        "Show": true
+        "Show": true,
+        "Global": {
+          "Color": "008FFFFF",
+          "PointA": {
+            "X": 232,
+            "Y": 260
+          },
+          "PointB": {
+            "X": 240,
+            "Y": 260
+          },
+          "Length": 97,
+          "Direction": 0
+        },
+        "Guild": {
+          "Color": "008FFFFF",
+          "PointA": {
+            "X": 232,
+            "Y": 378
+          },
+          "PointB": {
+            "X": 240,
+            "Y": 378
+          },
+          "Length": 97,
+          "Direction": 0
+        }
       },
       "Global": {
         "Color": "ffffffff",

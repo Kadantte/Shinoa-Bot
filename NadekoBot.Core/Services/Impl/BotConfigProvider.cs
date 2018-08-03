@@ -90,7 +90,7 @@ namespace NadekoBot.Core.Services.Impl
                             return false;
                         break;
                     case BotConfigEditType.TriviaCurrencyReward:
-                        if (int.TryParse(newValue, out var triviaReward) && triviaReward > 0)
+                        if (int.TryParse(newValue, out var triviaReward) && triviaReward >= 0)
                             bc.TriviaCurrencyReward = triviaReward;
                         else
                             return false;
@@ -208,6 +208,11 @@ namespace NadekoBot.Core.Services.Impl
                         if (!Enum.TryParse<UpdateCheckType>(newValue, true, out var up))
                             return false;
                         bc.CheckForUpdates = up;
+                        break;
+                    case BotConfigEditType.CurrencyGenerationPassword:
+                        if (!bool.TryParse(newValue, out var pw))
+                            return false;
+                        bc.CurrencyGenerationPassword = pw;
                         break;
                     default:
                         return false;

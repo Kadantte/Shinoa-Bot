@@ -61,7 +61,7 @@ namespace NadekoBot.Modules.Help
             var embed = new EmbedBuilder().WithOkColor()
                 .WithFooter(efb => efb.WithText("ℹ️" + GetText("modules_footer", Prefix)))
                 .WithTitle(GetText("list_of_modules"))
-                .WithDescription($"▫️ Actions\n▫️ Administration\n▫️ CustomReactions\n▫️ Gambling\n▫️ Games\n▫️ Help\n▫️ Music\n▫️ NSFW\n▫️ Permissions\n▫️ Pokemon\n▫️ Searches\n▫️ Utility\n▫️ Xp\n");
+                .WithDescription($"▫️ Actions\n▫️ Administration\n▫️ CustomReactions\n▫️ Gambling\n▫️ Games\n▫️ Help\n▫️ Music\n▫️ NSFW\n▫️ Permissions\n▫️ Searches\n▫️ Utility\n▫️ Xp\n");
             await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
 
