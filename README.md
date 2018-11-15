@@ -1,4 +1,4 @@
-#Shinoa Documentation
+#Shinoa Documentation  
 Hello there!  
 This is the Shinoa-Bot. She's basically a clone of the NadekoBot.   
 But Ene has a changed Source and a custom Music Module! :o  
