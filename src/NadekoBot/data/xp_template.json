@@ -7,10 +7,10 @@
     "Name": {
       "Color": "ffffffff",
       "Show": true,
-      "FontSize": 45,
+      "FontSize": 44,
       "Pos": {
-        "X": 95,
-        "Y": 30
+        "X": 92,
+        "Y": 31
       }
     },
     "Icon": {
@@ -30,7 +30,7 @@
       "FontSize": 20,
       "Pos": {
         "X": 78,
-        "Y": 170
+        "Y": 168
       }
     },
     "GuildLevel": {
@@ -39,7 +39,7 @@
       "FontSize": 20,
       "Pos": {
         "X": 78,
-        "Y": 290
+        "Y": 286
       }
     },
     "GlobalRank": {
@@ -68,7 +68,7 @@
         "FontSize": 20,
         "Pos": {
           "X": 78,
-          "Y": 229
+          "Y": 227
         }
       },
       "Guild": {
@@ -77,7 +77,7 @@
         "FontSize": 20,
         "Pos": {
           "X": 78,
-          "Y": 347
+          "Y": 345
         }
       }
     },
@@ -117,7 +117,7 @@
         "FontSize": 25,
         "Pos": {
           "X": 115,
-          "Y": 168
+          "Y": 165
         }
       },
       "Guild": {
@@ -126,7 +126,7 @@
         "FontSize": 25,
         "Pos": {
           "X": 115,
-          "Y": 283
+          "Y": 282
         }
       },
       "Awarded": {
@@ -155,10 +155,10 @@
     "Name": {
       "Color": "ffffffff",
       "Show": true,
-      "FontSize": 28,
+      "FontSize": 30,
       "Pos": {
-        "X": 235,
-        "Y": 100
+        "X": 240,
+        "Y": 97
       }
     }
   }

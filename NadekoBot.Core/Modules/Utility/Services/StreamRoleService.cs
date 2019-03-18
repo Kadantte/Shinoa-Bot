@@ -80,7 +80,7 @@ namespace NadekoBot.Modules.Utility.Services
         {
             userName.ThrowIfNull(nameof(userName));
 
-            bool success;
+            bool success = false;
             using (var uow = _db.UnitOfWork)
             {
                 var streamRoleSettings = uow.GuildConfigs.GetStreamRoleSettings(guild.Id);
@@ -94,7 +94,14 @@ namespace NadekoBot.Modules.Utility.Services
                     };
 
                     if (action == AddRemove.Rem)
-                        success = streamRoleSettings.Whitelist.Remove(userObj);
+                    {
+                        var toDelete = streamRoleSettings.Whitelist.FirstOrDefault(x => x.Equals(userObj));
+                        if (toDelete != null)
+                        {
+                            uow._context.Remove(toDelete);
+                            success = true;
+                        }
+                    }
                     else
                         success = streamRoleSettings.Whitelist.Add(userObj);
                 }
@@ -107,7 +114,14 @@ namespace NadekoBot.Modules.Utility.Services
                     };
 
                     if (action == AddRemove.Rem)
-                        success = streamRoleSettings.Blacklist.Remove(userObj);
+                    {
+                        var toRemove = streamRoleSettings.Blacklist.FirstOrDefault(x => x.Equals(userObj));
+                        if (toRemove != null)
+                        {
+                            success = true;
+                            success = streamRoleSettings.Blacklist.Remove(toRemove);
+                        }
+                    }
                     else
                         success = streamRoleSettings.Blacklist.Add(userObj);
                 }
@@ -209,6 +223,8 @@ namespace NadekoBot.Modules.Utility.Services
             {
                 var streamRoleSettings = uow.GuildConfigs.GetStreamRoleSettings(guild.Id);
                 streamRoleSettings.Enabled = false;
+                streamRoleSettings.AddRoleId = 0;
+                streamRoleSettings.FromRoleId = 0;
                 await uow.CompleteAsync();
             }
 
@@ -218,7 +234,7 @@ namespace NadekoBot.Modules.Utility.Services
 
         private async Task RescanUser(IGuildUser user, StreamRoleSettings setting, IRole addRole = null)
         {
-            if (user.Activity is StreamingGame g 
+            if (user.Activity is StreamingGame g
                 && g != null
                 && setting.Enabled
                 && !setting.Blacklist.Any(x => x.UserId == user.Id)
@@ -231,7 +247,11 @@ namespace NadekoBot.Modules.Utility.Services
                 {
                     addRole = addRole ?? user.Guild.GetRole(setting.AddRoleId);
                     if (addRole == null)
-                        throw new StreamRoleNotFoundException();
+                    {
+                        await StopStreamRole(user.Guild).ConfigureAwait(false);
+                        _log.Warn("Stream role in server {0} no longer exists. Stopping.", setting.AddRoleId);
+                        return;
+                    }
 
                     //check if he doesn't have addrole already, to avoid errors
                     if (!user.RoleIds.Contains(setting.AddRoleId))
@@ -290,7 +310,7 @@ namespace NadekoBot.Modules.Utility.Services
                 var users = await guild.GetUsersAsync(CacheMode.CacheOnly).ConfigureAwait(false);
                 foreach (var usr in users.Where(x => x.RoleIds.Contains(setting.FromRoleId) || x.RoleIds.Contains(addRole.Id)))
                 {
-                    if(usr is IGuildUser x)
+                    if (usr is IGuildUser x)
                         await RescanUser(x, setting, addRole).ConfigureAwait(false);
                 }
             }

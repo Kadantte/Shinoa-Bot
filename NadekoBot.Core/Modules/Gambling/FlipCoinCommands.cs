@@ -1,18 +1,18 @@
 using Discord;
 using Discord.Commands;
-using NadekoBot.Extensions;
-using NadekoBot.Core.Services;
-using System.Threading.Tasks;
 using NadekoBot.Common;
 using NadekoBot.Common.Attributes;
-using Image = SixLabors.ImageSharp.Image;
-using NadekoBot.Core.Modules.Gambling.Common;
-using NadekoBot.Modules.Gambling.Services;
 using NadekoBot.Core.Common;
-using System;
+using NadekoBot.Core.Modules.Gambling.Common;
+using NadekoBot.Core.Services;
+using NadekoBot.Extensions;
+using NadekoBot.Modules.Gambling.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace NadekoBot.Modules.Gambling
 {
@@ -38,7 +38,7 @@ namespace NadekoBot.Modules.Gambling
             {
                 if (count > 10 || count < 1)
                 {
-                    await ReplyErrorLocalized("flip_invalid", 10).ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("flip_invalid", 10).ConfigureAwait(false);
                     return;
                 }
                 var headCount = 0;
@@ -94,13 +94,13 @@ namespace NadekoBot.Modules.Gambling
                 var removed = await _cs.RemoveAsync(Context.User, "Betflip Gamble", amount, false, gamble: true).ConfigureAwait(false);
                 if (!removed)
                 {
-                    await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencyPluralName).ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("not_enough", Bc.BotConfig.CurrencyPluralName).ConfigureAwait(false);
                     return;
                 }
                 BetFlipGuess result;
                 Uri imageToSend;
                 var coins = _images.ImageUrls.Coins;
-                if (rng.Next(0, 2) == 1)
+                if (rng.Next(0, 1000) <= 499)
                 {
                     imageToSend = coins.Heads[rng.Next(0, coins.Heads.Length)];
                     result = BetFlipGuess.Heads;

@@ -1,18 +1,17 @@
 ﻿using Discord;
 using Discord.Commands;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using NadekoBot.Extensions;
-using System.Threading;
 using NadekoBot.Common;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Common.Collections;
+using NadekoBot.Extensions;
 using NadekoBot.Modules.Searches.Common;
 using NadekoBot.Modules.Searches.Services;
-using NadekoBot.Modules.Searches.Exceptions;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Linq;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NadekoBot.Modules.NSFW
 {
@@ -51,21 +50,13 @@ namespace NadekoBot.Modules.NSFW
                 var type = listOfProviders[num];
                 // remove it 
                 listOfProviders.RemoveAt(num);
-                try
-                {
-                    // get the image
-                    img = await _service.DapiSearch(tag, type, Context.Guild?.Id, true).ConfigureAwait(false);
-                }
-                catch (TagBlacklistedException)
-                {
-                    await ReplyErrorLocalized("blacklisted_tag").ConfigureAwait(false);
-                    return;
-                }
-                // if i can't find the image and i ran out of providers
+                // get the image
+                img = await _service.DapiSearch(tag, type, Context.Guild?.Id, true).ConfigureAwait(false);
+                // if i can't find the image, ran out of providers, or tag is blacklisted
                 // return the error
                 if (img == null && !listOfProviders.Any())
                 {
-                    await ReplyErrorLocalized("not_found").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("not_found").ConfigureAwait(false);
                     return;
                 }
 
@@ -76,6 +67,7 @@ namespace NadekoBot.Modules.NSFW
                 .WithDescription($"[{GetText("tag")}: {tag}]({img})"))
                 .ConfigureAwait(false);
         }
+
         private async Task InternalBoobs(IMessageChannel Channel)
         {
             try
@@ -123,7 +115,7 @@ namespace NadekoBot.Modules.NSFW
                 if (!_service.AutoHentaiTimers.TryRemove(Context.Channel.Id, out t)) return;
 
                 t.Change(Timeout.Infinite, Timeout.Infinite); //proper way to disable the timer
-                await ReplyConfirmLocalized("stopped").ConfigureAwait(false);
+                await ReplyConfirmLocalizedAsync("stopped").ConfigureAwait(false);
                 return;
             }
 
@@ -153,7 +145,7 @@ namespace NadekoBot.Modules.NSFW
                 return t;
             });
 
-            await ReplyConfirmLocalized("autohentai_started",
+            await ReplyConfirmLocalizedAsync("autohentai_started",
                 interval,
                 string.Join(", ", tagsArr)).ConfigureAwait(false);
         }
@@ -171,7 +163,7 @@ namespace NadekoBot.Modules.NSFW
                 if (!_service.AutoBoobTimers.TryRemove(Context.Channel.Id, out t)) return;
 
                 t.Change(Timeout.Infinite, Timeout.Infinite); //proper way to disable the timer
-                await ReplyConfirmLocalized("stopped").ConfigureAwait(false);
+                await ReplyConfirmLocalizedAsync("stopped").ConfigureAwait(false);
                 return;
             }
 
@@ -196,7 +188,7 @@ namespace NadekoBot.Modules.NSFW
                 return t;
             });
 
-            await ReplyConfirmLocalized("started", interval).ConfigureAwait(false);
+            await ReplyConfirmLocalizedAsync("started", interval).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -211,7 +203,7 @@ namespace NadekoBot.Modules.NSFW
                 if (!_service.AutoButtTimers.TryRemove(Context.Channel.Id, out t)) return;
 
                 t.Change(Timeout.Infinite, Timeout.Infinite); //proper way to disable the timer
-                await ReplyConfirmLocalized("stopped").ConfigureAwait(false);
+                await ReplyConfirmLocalizedAsync("stopped").ConfigureAwait(false);
                 return;
             }
 
@@ -236,7 +228,7 @@ namespace NadekoBot.Modules.NSFW
                 return t;
             });
 
-            await ReplyConfirmLocalized("started", interval).ConfigureAwait(false);
+            await ReplyConfirmLocalizedAsync("started", interval).ConfigureAwait(false);
         }
 #endif
 
@@ -261,7 +253,7 @@ namespace NadekoBot.Modules.NSFW
                 var linksEnum = images?.Where(l => l != null).ToArray();
                 if (images == null || !linksEnum.Any())
                 {
-                    await ReplyErrorLocalized("not_found").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("not_found").ConfigureAwait(false);
                     return;
                 }
 
@@ -317,7 +309,7 @@ namespace NadekoBot.Modules.NSFW
                 JToken obj;
                 using (var http = _httpFactory.CreateClient())
                 {
-                    obj = JArray.Parse(await http.GetStringAsync($"http://api.oboobs.ru/boobs/{new NadekoRandom().Next(0, 10330)}").ConfigureAwait(false))[0];
+                    obj = JArray.Parse(await http.GetStringAsync($"http://api.oboobs.ru/boobs/{new NadekoRandom().Next(0, 12000)}").ConfigureAwait(false))[0];
                 }
                 await Context.Channel.SendMessageAsync($"http://media.oboobs.ru/{obj["preview"]}").ConfigureAwait(false);
             }
@@ -336,7 +328,7 @@ namespace NadekoBot.Modules.NSFW
                 JToken obj;
                 using (var http = _httpFactory.CreateClient())
                 {
-                    obj = JArray.Parse(await http.GetStringAsync($"http://api.obutts.ru/butts/{new NadekoRandom().Next(0, 4335)}").ConfigureAwait(false))[0];
+                    obj = JArray.Parse(await http.GetStringAsync($"http://api.obutts.ru/butts/{new NadekoRandom().Next(0, 6100)}").ConfigureAwait(false))[0];
                 }
                 await Context.Channel.SendMessageAsync($"http://media.obutts.ru/{obj["preview"]}").ConfigureAwait(false);
             }
@@ -364,9 +356,9 @@ namespace NadekoBot.Modules.NSFW
                 var added = _service.ToggleBlacklistedTag(Context.Guild.Id, tag);
 
                 if (added)
-                    await ReplyConfirmLocalized("blacklisted_tag_add", tag).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("blacklisted_tag_add", tag).ConfigureAwait(false);
                 else
-                    await ReplyConfirmLocalized("blacklisted_tag_remove", tag).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("blacklisted_tag_remove", tag).ConfigureAwait(false);
             }
         }
 
@@ -382,18 +374,11 @@ namespace NadekoBot.Modules.NSFW
         public async Task InternalDapiCommand(string tag, DapiSearchType type, bool forceExplicit)
         {
             ImageCacherObject imgObj;
-            try
-            {
-                imgObj = await _service.DapiSearch(tag, type, Context.Guild?.Id, forceExplicit).ConfigureAwait(false);
-            }
-            catch (TagBlacklistedException)
-            {
-                await ReplyErrorLocalized("blacklisted_tag").ConfigureAwait(false);
-                return;
-            }
+
+            imgObj = await _service.DapiSearch(tag, type, Context.Guild?.Id, forceExplicit).ConfigureAwait(false);
 
             if (imgObj == null)
-                await ReplyErrorLocalized("not_found").ConfigureAwait(false);
+                await ReplyErrorLocalizedAsync("not_found").ConfigureAwait(false);
             else
             {
                 var embed = new EmbedBuilder().WithOkColor()

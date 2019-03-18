@@ -63,8 +63,11 @@ namespace NadekoBot.Modules.Administration.Services
             _cache = cache;
             _imgs = cache.LocalImages;
             _httpFactory = factory;
+            var sub = _redis.GetSubscriber();
             if (_client.ShardId == 0)
             {
+                sub.Subscribe(_creds.RedisKey() + "_reload_images",
+                    delegate { _imgs.Reload(); }, CommandFlags.FireAndForget);
                 _updateTimer = new Timer(async _ =>
                 {
                     try
@@ -91,10 +94,6 @@ namespace NadekoBot.Modules.Administration.Services
                     }
                 }, null, TimeSpan.FromHours(8), TimeSpan.FromHours(8));
             }
-
-            var sub = _redis.GetSubscriber();
-            sub.Subscribe(_creds.RedisKey() + "_reload_images",
-                delegate { _imgs.Reload(); }, CommandFlags.FireAndForget);
             sub.Subscribe(_creds.RedisKey() + "_reload_bot_config",
                 delegate { _bc.Reload(); }, CommandFlags.FireAndForget);
             sub.Subscribe(_creds.RedisKey() + "_leave_guild", async (ch, v) =>
@@ -192,7 +191,7 @@ namespace NadekoBot.Modules.Administration.Services
                 uow.Complete();
             }
 
-            _bc.Reload();
+            _bc.BotConfig.LastUpdate = dt;
         }
 
         private async Task<string> GetNewRelease()
@@ -214,7 +213,7 @@ namespace NadekoBot.Modules.Administration.Services
             using (var uow = _db.UnitOfWork)
             {
                 var bc = uow.BotConfig.GetOrCreate(set => set);
-                bc.CheckForUpdates = type;
+                _bc.BotConfig.CheckForUpdates = bc.CheckForUpdates = type;
                 uow.Complete();
             }
 
@@ -222,8 +221,6 @@ namespace NadekoBot.Modules.Administration.Services
             {
                 _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
             }
-
-            _bc.Reload();
         }
 
         private Timer TimerFromStartupCommand(StartupCommand x)
@@ -389,7 +386,7 @@ namespace NadekoBot.Modules.Administration.Services
 
                 if (cmd != null)
                 {
-                    cmds.Remove(cmd);
+                    uow._context.Remove(cmd);
                     if (_autoCommands.TryGetValue(cmd.GuildId, out var autos))
                         if (autos.TryRemove(cmd.Id, out var timer))
                             timer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -464,10 +461,9 @@ namespace NadekoBot.Modules.Administration.Services
             using (var uow = _db.UnitOfWork)
             {
                 var config = uow.BotConfig.GetOrCreate(set => set);
-                config.ForwardMessages = !config.ForwardMessages;
+                _bc.BotConfig.ForwardMessages = config.ForwardMessages = !config.ForwardMessages;
                 uow.Complete();
             }
-            _bc.Reload();
         }
 
         public void Restart()
@@ -495,10 +491,9 @@ namespace NadekoBot.Modules.Administration.Services
             using (var uow = _db.UnitOfWork)
             {
                 var config = uow.BotConfig.GetOrCreate(set => set);
-                config.ForwardToAllOwners = !config.ForwardToAllOwners;
+                _bc.BotConfig.ForwardToAllOwners = config.ForwardToAllOwners = !config.ForwardToAllOwners;
                 uow.Complete();
             }
-            _bc.Reload();
         }
 
         public IEnumerable<ShardComMessage> GetAllShardStatuses()

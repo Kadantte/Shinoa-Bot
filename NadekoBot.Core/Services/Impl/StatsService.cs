@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using NadekoBot.Extensions;
+using NLog;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,8 +13,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using StackExchange.Redis;
-using NLog;
 
 namespace NadekoBot.Core.Services.Impl
 {
@@ -23,8 +23,8 @@ namespace NadekoBot.Core.Services.Impl
         private readonly IBotCredentials _creds;
         private readonly DateTime _started;
 
-        public const string BotVersion = "②.②⑦.②";
-        public string Author => "<@199153694464278529>";
+        public const string BotVersion = "②.②⑨.②";
+        public string Author => "Gremagol#0001";
         public string Library => "Discord.Net";
 
         public string Heap => Math.Round((double)GC.GetTotalMemory(false) / 1.MiB(), 2)

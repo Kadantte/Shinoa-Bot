@@ -1,11 +1,11 @@
 using Discord;
 using Discord.Commands;
-using NadekoBot.Extensions;
-using System.Threading.Tasks;
-using NadekoBot.Common.Attributes;
-using NadekoBot.Modules.Gambling.Services;
 using Discord.WebSocket;
+using NadekoBot.Common.Attributes;
+using NadekoBot.Extensions;
+using NadekoBot.Modules.Gambling.Services;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NadekoBot.Modules.Games
 {
@@ -14,7 +14,6 @@ namespace NadekoBot.Modules.Games
         [Group]
         public class PlantPickCommands : NadekoSubmodule<PlantPickService>
         {
-
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             public async Task Pick(string pass = null)
@@ -28,14 +27,14 @@ namespace NadekoBot.Modules.Games
 
                 if (picked > 0)
                 {
-                    var msg = await ReplyConfirmLocalized("picked", picked + Bc.BotConfig.CurrencySign)
+                    var msg = await ReplyConfirmLocalizedAsync("picked", picked + Bc.BotConfig.CurrencySign)
                        .ConfigureAwait(false);
                     msg.DeleteAfter(10);
                 }
 
                 if (((SocketGuild)Context.Guild).CurrentUser.GuildPermissions.ManageMessages)
                 {
-                    await Context.Message.DeleteAsync().ConfigureAwait(false);
+                    try { await Context.Message.DeleteAsync().ConfigureAwait(false); } catch { }
                 }
             }
 
@@ -54,7 +53,7 @@ namespace NadekoBot.Modules.Games
                 var success = await _service.PlantAsync(Context.Guild.Id, Context.Channel, Context.User.Id, Context.User.ToString(), amount, pass);
                 if (!success)
                 {
-                    await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign).ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("not_enough", Bc.BotConfig.CurrencySign).ConfigureAwait(false);
                     return;
                 }
 
@@ -75,11 +74,11 @@ namespace NadekoBot.Modules.Games
                 bool enabled = _service.ToggleCurrencyGeneration(Context.Guild.Id, Context.Channel.Id);
                 if (enabled)
                 {
-                    await ReplyConfirmLocalized("curgen_enabled").ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("curgen_enabled").ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyConfirmLocalized("curgen_disabled").ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("curgen_disabled").ConfigureAwait(false);
                 }
             }
 

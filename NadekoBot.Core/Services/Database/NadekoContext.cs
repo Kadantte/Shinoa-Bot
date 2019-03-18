@@ -7,6 +7,7 @@ using System;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Data.Sqlite;
 using System.IO;
+using NadekoBot.Core.Services.Impl;
 
 namespace NadekoBot.Core.Services.Database
 {
@@ -15,7 +16,8 @@ namespace NadekoBot.Core.Services.Database
         public NadekoContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<NadekoContext>();
-            var builder = new SqliteConnectionStringBuilder("Data Source=data/NadekoBot.db");
+            IBotCredentials creds = new BotCredentials();
+            var builder = new SqliteConnectionStringBuilder(creds.Db.ConnectionString);
             builder.DataSource = Path.Combine(AppContext.BaseDirectory, builder.DataSource);
             optionsBuilder.UseSqlite(builder.ToString());
             var ctx = new NadekoContext(optionsBuilder.Options);
@@ -38,7 +40,6 @@ namespace NadekoBot.Core.Services.Database
         public DbSet<Warning> Warnings { get; set; }
         public DbSet<UserXpStats> UserXpStats { get; set; }
         public DbSet<ClubInfo> Clubs { get; set; }
-        public DbSet<LoadedPackage> LoadedPackages { get; set; }
 
         //logging
         public DbSet<LogSetting> LogSettings { get; set; }
@@ -216,6 +217,8 @@ namespace NadekoBot.Core.Services.Database
 
             wi.HasIndex(x => x.Price);
             wi.HasIndex(x => x.ClaimerId);
+
+            var wu = modelBuilder.Entity<WaifuUpdate>();
             #endregion
 
             #region DiscordUser
@@ -245,7 +248,7 @@ namespace NadekoBot.Core.Services.Database
 
             #region PatreonRewards
             var pr = modelBuilder.Entity<RewardedUser>();
-            pr.HasIndex(x => x.UserId)
+            pr.HasIndex(x => x.PatreonUserId)
                 .IsUnique();
             #endregion
 
@@ -332,8 +335,13 @@ namespace NadekoBot.Core.Services.Database
 
             #region  GroupName
             modelBuilder.Entity<GroupName>()
-                .HasIndex(x => x.Number)
+                .HasIndex(x => new { x.GuildConfigId, x.Number })
                 .IsUnique();
+
+            modelBuilder.Entity<GroupName>()
+                .HasOne(x => x.GuildConfig)
+                .WithMany(x => x.SelfAssignableRoleGroupNames)
+                .IsRequired();
             #endregion
         }
     }

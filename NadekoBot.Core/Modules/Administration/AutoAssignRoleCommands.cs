@@ -23,17 +23,20 @@ namespace NadekoBot.Modules.Administration
                 var guser = (IGuildUser)Context.User;
                 if (role != null)
                 {
+                    if (role.Id == Context.Guild.EveryoneRole.Id)
+                        return;
+
                     // the user can't aar the role which is higher or equal to his highest role
                     if (Context.User.Id != guser.Guild.OwnerId && guser.GetRoles().Max(x => x.Position) <= role.Position)
                         return;
 
                     _service.EnableAar(Context.Guild.Id, role.Id);
-                    await ReplyConfirmLocalized("aar_enabled").ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("aar_enabled").ConfigureAwait(false);
                 }
                 else
                 {
                     _service.DisableAar(Context.Guild.Id);
-                    await ReplyConfirmLocalized("aar_disabled").ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("aar_disabled").ConfigureAwait(false);
                     return;
                 }
             }

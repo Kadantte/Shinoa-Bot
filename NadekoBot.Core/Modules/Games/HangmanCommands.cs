@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.Games.Common.Hangman;
 using NadekoBot.Modules.Games.Services;
+using NadekoBot.Modules.Games.Common.Hangman.Exceptions;
 
 namespace NadekoBot.Modules.Games
 {
@@ -33,12 +34,20 @@ namespace NadekoBot.Modules.Games
             [RequireContext(ContextType.Guild)]
             public async Task Hangman([Remainder]string type = "random")
             {
-                var hm = new Hangman(type, _service.TermPool);
+                Hangman hm;
+                try
+                {
+                    hm = new Hangman(type, _service.TermPool);
+                }
+                catch (TermNotFoundException)
+                {
+                    return;
+                }
 
                 if (!_service.HangmanGames.TryAdd(Context.Channel.Id, hm))
                 {
                     hm.Dispose();
-                    await ReplyErrorLocalized("hangman_running").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("hangman_running").ConfigureAwait(false);
                     return;
                 }
                 hm.OnGameEnded += Hm_OnGameEnded;
@@ -127,7 +136,7 @@ namespace NadekoBot.Modules.Games
                 if (_service.HangmanGames.TryRemove(Context.Channel.Id, out var removed))
                 {
                     await removed.Stop().ConfigureAwait(false);
-                    await ReplyConfirmLocalized("hangman_stopped").ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("hangman_stopped").ConfigureAwait(false);
                 }
             }
         }

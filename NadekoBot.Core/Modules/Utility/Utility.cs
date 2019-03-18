@@ -1,19 +1,19 @@
 using Discord;
 using Discord.Commands;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Text;
-using NadekoBot.Extensions;
-using NadekoBot.Core.Services.Impl;
-using System.Net.Http;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using Discord.WebSocket;
-using System.Diagnostics;
 using NadekoBot.Common;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Core.Services;
+using NadekoBot.Core.Services.Impl;
+using NadekoBot.Extensions;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NadekoBot.Modules.Utility
 {
@@ -78,7 +78,7 @@ namespace NadekoBot.Modules.Utility
 
             int i = 0;
             if (arr.Length == 0)
-                await ReplyErrorLocalized("nobody_playing_game").ConfigureAwait(false);
+                await ReplyErrorLocalizedAsync("nobody_playing_game").ConfigureAwait(false);
             else
             {
                 await Context.Channel.SendConfirmAsync("```css\n" + string.Join("\n", arr.GroupBy(item => (i++) / 2)
@@ -129,7 +129,7 @@ namespace NadekoBot.Modules.Utility
         public async Task UserId([Remainder] IGuildUser target = null)
         {
             var usr = target ?? Context.User;
-            await ReplyConfirmLocalized("userid", "🆔", Format.Bold(usr.ToString()),
+            await ReplyConfirmLocalizedAsync("userid", "🆔", Format.Bold(usr.ToString()),
                 Format.Code(usr.Id.ToString())).ConfigureAwait(false);
         }
 
@@ -137,14 +137,14 @@ namespace NadekoBot.Modules.Utility
         [RequireContext(ContextType.Guild)]
         public async Task RoleId([Remainder] IRole role)
         {
-            await ReplyConfirmLocalized("roleid", "🆔", Format.Bold(role.ToString()),
+            await ReplyConfirmLocalizedAsync("roleid", "🆔", Format.Bold(role.ToString()),
                 Format.Code(role.Id.ToString())).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
         public async Task ChannelId()
         {
-            await ReplyConfirmLocalized("channelid", "🆔", Format.Code(Context.Channel.Id.ToString()))
+            await ReplyConfirmLocalizedAsync("channelid", "🆔", Format.Code(Context.Channel.Id.ToString()))
                 .ConfigureAwait(false);
         }
 
@@ -152,7 +152,7 @@ namespace NadekoBot.Modules.Utility
         [RequireContext(ContextType.Guild)]
         public async Task ServerId()
         {
-            await ReplyConfirmLocalized("serverid", "🆔", Format.Code(Context.Guild.Id.ToString()))
+            await ReplyConfirmLocalizedAsync("serverid", "🆔", Format.Code(Context.Guild.Id.ToString()))
                 .ConfigureAwait(false);
         }
 
@@ -173,7 +173,7 @@ namespace NadekoBot.Modules.Utility
                 var roles = target.GetRoles().Except(new[] { guild.EveryoneRole }).OrderBy(r => -r.Position).Skip((page - 1) * rolesPerPage).Take(rolesPerPage).ToArray();
                 if (!roles.Any())
                 {
-                    await ReplyErrorLocalized("no_roles_on_page").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("no_roles_on_page").ConfigureAwait(false);
                 }
                 else
                 {
@@ -187,7 +187,7 @@ namespace NadekoBot.Modules.Utility
                 var roles = guild.Roles.Except(new[] { guild.EveryoneRole }).OrderBy(r => -r.Position).Skip((page - 1) * rolesPerPage).Take(rolesPerPage).ToArray();
                 if (!roles.Any())
                 {
-                    await ReplyErrorLocalized("no_roles_on_page").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("no_roles_on_page").ConfigureAwait(false);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace NadekoBot.Modules.Utility
 
             var topic = channel.Topic;
             if (string.IsNullOrWhiteSpace(topic))
-                await ReplyErrorLocalized("no_topic_set").ConfigureAwait(false);
+                await ReplyErrorLocalizedAsync("no_topic_set").ConfigureAwait(false);
             else
                 await Context.Channel.SendConfirmAsync(GetText("channel_topic"), topic).ConfigureAwait(false);
         }
@@ -227,21 +227,21 @@ namespace NadekoBot.Modules.Utility
 
             await Context.Channel.EmbedAsync(
                 new EmbedBuilder().WithOkColor()
-                    .WithAuthor(eab => eab.WithName($"Ene v{StatsService.BotVersion}")
+                    .WithAuthor(eab => eab.WithName($"Shinoa v{StatsService.BotVersion}")
                                           .WithUrl("http://enecmdlist.readthedocs.io/en/latest/")
-                                          .WithIconUrl("http://i.imgur.com/j1ZcL75.png"))
-                    .AddField(efb => efb.WithName($"My Master").WithValue($"💙 {_stats.Author}").WithIsInline(true))
+                                          .WithIconUrl("https://i.imgur.com/ejLDGwO.png"))
+                    .AddField(efb => efb.WithName($"My Master").WithValue($"💜 {_stats.Author}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Performance").WithValue($"🔣 **{_stats.CommandsRan.ToString()}** commands \n💬 **{_stats.MessageCounter}** Msgs ({_stats.MessagesPerSecond:F2}/sec) \n💻 **{_stats.Heap}** MB Ram").WithIsInline(true))
                     .AddField(efb => efb.WithName("Uptime").WithValue($"{_stats.GetUptimeString("\n")}").WithIsInline(true))		
                     .AddField(efb => efb.WithName($"Presence").WithValue($"👥 **{_bot.GuildCount}** Servers \n✏ **{_stats.TextChannels}** Text Channels \n🔊 **{_stats.VoiceChannels}** Voice Channels").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Shard").WithValue($"👾 #{_client.ShardId} / {_creds.TotalShards}").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Latency").WithValue($"📡 **{(int)sw.Elapsed.TotalMilliseconds}** ms").WithIsInline(true))
                     .AddField(efb => efb.WithName($"Documentation").WithValue($"🛠️ type `.help`").WithIsInline(true))	
-                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💙 Me: **[Click Here](https://discordapp.com/oauth2/authorize?scope=bot&client_id=464107301285134346&permissions=66186303)** \n❤️ My Cave: **[Click Here](https://discord.gg/fWDffyn)**").WithIsInline(true))							
-                    .AddField(efb => efb.WithName($"Thanks to").WithValue($"**Kwoth#2560**\nfor creating the \n[NadekoBot](https://github.com/Kwoth/NadekoBot) and\nthe [Embed Builder](https://github.com/Kwoth/embed-visualizer)\n\n**Fre_d#0310**\nfor creating\n[FredBoat](https://github.com/Frederikam/FredBoat)").WithIsInline(true))	
-                    .AddField(efb => efb.WithName($"Much love to").WithValue($"Kwoth#2560\nFre_d#0310\nSkarrior#8888\nMacley-Kun#9105\nMΔИՄΣL#0281\nOri#9159").WithIsInline(true))
-                    .WithImageUrl("https://i.imgur.com/VzxZjol.gif")
-					.WithFooter(efb => efb.WithText($"Without you guys, Ene wouldn't be like this nowadays! 💙")));
+                    .AddField(efb => efb.WithName($"Invite links").WithValue($"💜 Me: **[Click Here](https://discordapp.com/oauth2/authorize?scope=bot&client_id=464107301285134346&permissions=66186303)** \n❤️ My Cave: **[Click Here](https://discord.gg/fWDffyn)**").WithIsInline(true))							
+                    .AddField(efb => efb.WithName($"Thanks to").WithValue($"**Kwoth#2452**\nfor creating the \n[NadekoBot](https://nadekobot.me/) and\nthe [Embed Builder](https://github.com/Kwoth/embed-visualizer)\n\n**Senither#0001**\nfor creating\n[AvaIre](https://avairebot.com/)").WithIsInline(true))	
+                    .AddField(efb => efb.WithName($"Much love to").WithValue($"Kwoth#2452\nSenither#0001\nSkarrior#8888\nMacley-Kun#9105\nMΔИՄΣL#0281\nOri#9159").WithIsInline(true))
+                    .WithImageUrl("https://i.imgur.com/ufysuYz.gif")
+					.WithFooter(efb => efb.WithText($"Without you guys, Shinoa wouldn't be like this nowadays! 💜")));
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -252,9 +252,9 @@ namespace NadekoBot.Modules.Utility
             var result = string.Join("\n", tags.Select(m => GetText("showemojis", m, m.Url)));
 
             if (string.IsNullOrWhiteSpace(result))
-                await ReplyErrorLocalized("showemojis_none").ConfigureAwait(false);
+                await ReplyErrorLocalizedAsync("showemojis_none").ConfigureAwait(false);
             else
-                await Context.Channel.SendMessageAsync(result).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync(result.TrimTo(2000)).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -270,14 +270,14 @@ namespace NadekoBot.Modules.Utility
 
             if (!guilds.Any())
             {
-                await ReplyErrorLocalized("listservers_none").ConfigureAwait(false);
+                await ReplyErrorLocalizedAsync("listservers_none").ConfigureAwait(false);
                 return;
             }
 
             await Context.Channel.EmbedAsync(guilds.Aggregate(new EmbedBuilder().WithOkColor(),
                                      (embed, g) => embed.AddField(efb => efb.WithName(g.Name)
                                                                            .WithValue(
-                                             GetText("listservers", g.Id, g.Users.Count,
+                                             GetText("listservers", g.Id, g.MemberCount,
                                                  g.OwnerId))
                                                                            .WithIsInline(false))))
                          .ConfigureAwait(false);
@@ -323,6 +323,7 @@ namespace NadekoBot.Modules.Utility
                 await Context.User.SendFileAsync(stream, title, title, false).ConfigureAwait(false);
             }
         }
+
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Ping()
         {

@@ -1,14 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
-using NadekoBot.Extensions;
-using NadekoBot.Core.Services;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Common.TypeReaders;
-using NadekoBot.Modules.Permissions.Services;
+using NadekoBot.Core.Services;
 using NadekoBot.Core.Services.Database.Models;
-using Microsoft.EntityFrameworkCore;
+using NadekoBot.Extensions;
+using NadekoBot.Modules.Permissions.Services;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NadekoBot.Modules.Permissions
 {
@@ -32,7 +32,7 @@ namespace NadekoBot.Modules.Permissions
             {
                 if (!_service.BlockedModules.Any() && !_service.BlockedCommands.Any())
                 {
-                    await ReplyErrorLocalized("lgp_none").ConfigureAwait(false);
+                    await ReplyErrorLocalizedAsync("lgp_none").ConfigureAwait(false);
                     return;
                 }
 
@@ -63,7 +63,7 @@ namespace NadekoBot.Modules.Permissions
                         });
                         uow.Complete();
                     }
-                    await ReplyConfirmLocalized("gmod_add", Format.Bold(module.Name)).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("gmod_add", Format.Bold(module.Name)).ConfigureAwait(false);
                     return;
                 }
                 else if (_service.BlockedModules.TryRemove(moduleName))
@@ -71,10 +71,12 @@ namespace NadekoBot.Modules.Permissions
                     using (var uow = _db.UnitOfWork)
                     {
                         var bc = uow.BotConfig.GetOrCreate(set => set.Include(x => x.BlockedModules));
-                        bc.BlockedModules.RemoveWhere(x => x.Name == moduleName);
+                        var mdls = bc.BlockedModules.Where(x => x.Name == moduleName);
+                        if (mdls.Any())
+                            uow._context.RemoveRange(mdls.ToArray());
                         uow.Complete();
                     }
-                    await ReplyConfirmLocalized("gmod_remove", Format.Bold(module.Name)).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("gmod_remove", Format.Bold(module.Name)).ConfigureAwait(false);
                     return;
                 }
             }
@@ -95,7 +97,7 @@ namespace NadekoBot.Modules.Permissions
                         });
                         uow.Complete();
                     }
-                    await ReplyConfirmLocalized("gcmd_add", Format.Bold(cmd.Name)).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("gcmd_add", Format.Bold(cmd.Name)).ConfigureAwait(false);
                     return;
                 }
                 else if (_service.BlockedCommands.TryRemove(commandName))
@@ -103,10 +105,12 @@ namespace NadekoBot.Modules.Permissions
                     using (var uow = _db.UnitOfWork)
                     {
                         var bc = uow.BotConfig.GetOrCreate(set => set.Include(x => x.BlockedCommands));
-                        bc.BlockedCommands.RemoveWhere(x => x.Name == commandName);
+                        var objs = bc.BlockedCommands.Where(x => x.Name == commandName);
+                        if (objs.Any())
+                            uow._context.RemoveRange(objs.ToArray());
                         uow.Complete();
                     }
-                    await ReplyConfirmLocalized("gcmd_remove", Format.Bold(cmd.Name)).ConfigureAwait(false);
+                    await ReplyConfirmLocalizedAsync("gcmd_remove", Format.Bold(cmd.Name)).ConfigureAwait(false);
                     return;
                 }
             }
