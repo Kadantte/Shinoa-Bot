@@ -90,18 +90,21 @@ namespace NadekoBot.Modules.Games.Services
             return message;
         }
 
-        public static async Task<bool> TryAsk(IChatterBotSession cleverbot, ITextChannel channel, string message)
+public static async Task<bool> TryAsk(IChatterBotSession cleverbot, IUserMessage msg, string message)
         {
+            var channel = msg.Channel;
+            var user = msg.Author;
+
             await channel.TriggerTypingAsync().ConfigureAwait(false);
 
             var response = await cleverbot.Think(message).ConfigureAwait(false);
             try
             {
-                await channel.SendConfirmAsync(response.SanitizeMentions()).ConfigureAwait(false);
+                await channel.SendConfirmAsync(user.Mention + " " + response.SanitizeMentions()).ConfigureAwait(false);
             }
             catch
             {
-                await channel.SendConfirmAsync(response.SanitizeMentions()).ConfigureAwait(false); // try twice :\
+                await channel.SendConfirmAsync(user.Mention + " " + response.SanitizeMentions()).ConfigureAwait(false); // try twice :\
             }
             return true;
         }
@@ -131,7 +134,7 @@ namespace NadekoBot.Modules.Games.Services
                     return true;
                 }
 
-                var cleverbotExecuted = await TryAsk(cbs, (ITextChannel)usrMsg.Channel, message).ConfigureAwait(false);
+                var cleverbotExecuted = await TryAsk(cbs, usrMsg, message).ConfigureAwait(false);
                 if (cleverbotExecuted)
                 {
                     _log.Info($@"CleverBot Executed
